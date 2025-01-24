@@ -1,0 +1,80 @@
+{% if view_namespace == 'app' %}
+<div class="relative mx-4"
+  @click.outside="$refs.wsmenu.removeAttribute('data-open')">
+  <div class="w-60 text-base menu-bl menu peer" x-ref="wsmenu"
+    @click="$el.removeAttribute('data-open')">
+
+    <div class="flex gap-3 items-center p-4 w-full">
+      <x-avatar title="{{ workspace.name }}" length="1"></x-avatar>
+
+      <div class="max-w-[120px] whitespace-nowrap">
+        <div class="overflow-hidden font-semibold text-ellipsis"
+          x-text="$store.workspace.name">
+          {{ workspace.name }}
+        </div>
+
+        {% if workspace.subscription %}
+        <div class="overflow-hidden text-xs text-content-dimmed text-ellipsis">
+          {{ workspace.subscription.plan.title }}
+        </div>
+        {% endif %}
+      </div>
+
+      <button class="ml-auto text-content-dimmed hover:text-content"
+        x-tooltip.raw="{{ __('Switch workspace') }}"
+        @click="modal.open('workspace-switch')">
+        <i class="ti ti-switch-horizontal"></i>
+      </button>
+    </div>
+
+    <hr class="border-t border-line-dimmed">
+
+    <ul>
+      <li>
+        <a href="app/workspace"
+          class="flex gap-2 items-center px-4 py-2 hover:bg-intermediate hover:no-underline">
+          <i class="ti ti-settings-2"></i>
+
+          {{ p__('button', 'Overview') }}
+        </a>
+      </li>
+
+      <li>
+        <a href="app/billing"
+          class="flex gap-2 items-center px-4 py-2 hover:bg-intermediate hover:no-underline">
+          <i class="ti ti-credit-card"></i>
+
+          {{ p__('button', 'Billing') }}
+        </a>
+      </li>
+
+      <li>
+        <a href="app/logs/usage"
+          class="flex gap-2 items-center px-4 py-2 hover:bg-intermediate hover:no-underline">
+          <i class="ti ti-mist"></i>
+
+          {{ p__('button', 'Logs') }}
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <button
+    class="flex items-center justify-between w-full p-2 text-left border rounded-lg border-line hover:bg-main peer-data-[open]:bg-main"
+    @click="$refs.wsmenu.toggleAttribute('data-open')">
+    <div class="max-w-[128px] whitespace-nowrap">
+      <div
+        class="overflow-hidden text-xs text-intermediate-content-dimmed text-ellipsis">
+        {{ p__('label', 'Workspace') }}
+      </div>
+
+      <div class="overflow-hidden font-semibold text-ellipsis"
+        x-text="$store.workspace.name">
+        {{ workspace.name }}
+      </div>
+    </div>
+
+    <i class="ti ti-chevron-down text-intermediate-content-dimmed"></i>
+  </button>
+</div>
+{% endif %}

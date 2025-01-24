@@ -1,0 +1,764 @@
+{% extends "/layouts/main.twig" %}
+
+{% set active_menu = 'voiceover' %}
+{% set xdata %}list("voices"){% endset %}
+{% block title p__('title', 'Voices')|title %}
+
+{% block template %}
+<div>
+  {% include "snippets/back.twig" with {link: 'app', label: p__('button', 'Dashboard')} %}
+
+  <h1 class="mt-4">{{ p__('heading', 'Voice over') }}</h1>
+  <p class="text-content-dimmed">
+    {{ __('Select one of the following voices and start transform your words to voice easily.') }}
+  </p>
+</div>
+
+{# Filters #}
+{% include "/snippets/filters.twig" with { 
+  total: __("Total :count voices"),
+  showHidden: true,
+  filters: [
+    {
+      label: p__('label', 'Language'),
+      model: 'language',
+      options: [
+        {
+          value: "af-ZA",
+          label: p__('language', "Afrikaans")
+        },
+        {
+          value: "am-ET",
+          label: p__('language', "Amharic")
+        },
+        {
+          value: "ar-",
+          label: p__('language', "Arabic")
+        },
+        {
+          value: "as-IN",
+          label: p__('language', "Assamese")
+        },
+        {
+          value: "az-AZ",
+          label: p__('language', "Azerbaijani")
+        },
+        {
+          value: "be-BY",
+          label: p__('language', "Belarusian")
+        },
+        {
+          value: "bg-BG",
+          label: p__('language', "Bulgarian")
+        },
+        {
+          value: "bn-",
+          label: p__('language', "Bengali")
+        },
+        {
+          value: "bs-BA",
+          label: p__('language', "Bosnian")
+        },
+        {
+          value: "ca-ES",
+          label: p__('language', "Catalan")
+        },
+        {
+          value: "CN",
+          label: p__('language', "Chinese")
+        },
+        {
+          value: "cs-CZ",
+          label: p__('language', "Czech")
+        },
+        {
+          value: "cy-GB",
+          label: p__('language', "Welsh")
+        },
+        {
+          value: "da-DK",
+          label: p__('language', "Danish")
+        },
+        {
+          value: "de-",
+          label: p__('language', "German")
+        },
+        {
+          value: "el-GR",
+          label: p__('language', "Greek")
+        },
+        {
+          value: "en-",
+          label: p__('language', "English")
+        },
+        {
+          value: "es-",
+          label: p__('language', "Spanish")
+        },
+        {
+          value: "et-EE",
+          label: p__('language', "Estonian")
+        },
+        {
+          value: "eu-ES",
+          label: p__('language', "Basque")
+        },
+        {
+          value: "fa-IR",
+          label: p__('language', "Persian")
+        },
+        {
+          value: "fi-FI",
+          label: p__('language', "Finnish")
+        },
+        {
+          value: "fil-PH",
+          label: p__('language', "Filipino")
+        },
+        {
+          value: "fr-",
+          label: p__('language', "French")
+        },
+        {
+          value: "ga-IE",
+          label: p__('language', "Irish")
+        },
+        {
+          value: "gl-ES",
+          label: p__('language', "Galician")
+        },
+        {
+          value: "gu-IN",
+          label: p__('language', "Gujarati")
+        },
+        {
+          value: "he-IL",
+          label: p__('language', "Hebrew")
+        },
+        {
+          value: "hi-IN",
+          label: p__('language', "Hindi")
+        },
+        {
+          value: "hr-HR",
+          label: p__('language', "Croatian")
+        },
+        {
+          value: "hu-HU",
+          label: p__('language', "Hungarian")
+        },
+        {
+          value: "hy-AM",
+          label: p__('language', "Armenian")
+        },
+        {
+          value: "id-ID",
+          label: p__('language', "Indonesian")
+        },
+        {
+          value: "is-IS",
+          label: p__('language', "Icelandic")
+        },
+        {
+          value: "it-IT",
+          label: p__('language', "Italian")
+        },
+        {
+          value: "ja-JP",
+          label: p__('language', "Japanese")
+        },
+        {
+          value: "jv-ID",
+          label: p__('language', "Javanese")
+        },
+        {
+          value: "ka-GE",
+          label: p__('language', "Georgian")
+        }, 
+        {
+          value: "kk-KZ",
+          label: p__('language', "Kazakh")
+        },
+        {
+          value: "km-KH",
+          label: p__('language', "Khmer")
+        },
+        {
+          value: "kn-IN",
+          label: p__('language', "Kannada")
+        },
+        {
+          value: "ko-KR",
+          label: p__('language', "Korean")
+        },
+        {
+          value: "lo-LA",
+          label: p__('language', "Lao")
+        },
+        {
+          value: "lt-LT",
+          label: p__('language', "Lithuanian")
+        },
+        {
+          value: "lv-LV",
+          label: p__('language', "Latvian")
+        },
+        {
+          value: "mk-MK",
+          label: p__('language', "Macedonian")
+        },
+        {
+          value: "mi-NZ",
+          label: p__('language', "Maori")
+        },
+        {
+          value: "ml-IN",
+          label: p__('language', "Malayalam")
+        },
+        {
+          value: "mn-MN",
+          label: p__('language', "Mongolian")
+        },
+        {
+          value: "mr-IN",
+          label: p__('language', "Marathi")
+        },
+        {
+          value: "ms-MY",
+          label: p__('language', "Malay")
+        },
+        {
+          value: "mt-MT",
+          label: p__('language', "Maltese")
+        },
+        {
+          value: "my-MM",
+          label: p__('language', "Burmese")
+        },
+        {
+          value: "ne-NP",
+          label: p__('language', "Nepali")
+        },
+        {
+          value: "nl-",
+          label: p__('language', "Dutch")
+        },
+        {
+          value: "nb-NO",
+          label: p__('language', "Norwegian")
+        },
+        {
+          value: "or-IN",
+          label: p__('language', "Oriya")
+        },
+        {
+          value: "pa-IN",
+          label: p__('language', "Punjabi")
+        },
+        {
+          value: "pl-PL",
+          label: p__('language', "Polish")
+        },
+        {
+          value: "ps-AF",
+          label: p__('language', "Pashto")
+        },
+        {
+          value: "pt-",
+          label: p__('language', "Portuguese")
+        },
+        {
+          value: "ro-RO",
+          label: p__('language', "Romanian")
+        },
+        {
+          value: "ru-RU",
+          label: p__('language', "Russian")
+        },
+        {
+          value: "si-LK",
+          label: p__('language', "Sinhala")
+        },
+        {
+          value: "sk-SK",
+          label: p__('language', "Slovak")
+        },
+        {
+          value: "sl-SI",
+          label: p__('language', "Slovenian")
+        },
+        {
+          value: "so-SO",
+          label: p__('language', "Somali")
+        },
+        {
+          value: "sq-AL",
+          label: p__('language', "Albanian")
+        },
+        {
+          value: "sr-",
+          label: p__('language', "Serbian")
+        },
+        {
+          value: "su-ID",
+          label: p__('language', "Sundanese")
+        },
+        {
+          value: "sv-SE",
+          label: p__('language', "Swedish")
+        },
+        {
+          value: "sw-",
+          label: p__('language', "Swahili")
+        },
+        {
+          value: "ta-IN",
+          label: p__('language', "Tamil")
+        },
+        {
+          value: "te-IN",
+          label: p__('language', "Telugu")
+        },
+        {
+          value: "th-TH",
+          label: p__('language', "Thai")
+        },
+        {
+          value: "tl-PH",
+          label: p__('language', "Tagalog")
+        },
+        {
+          value: "tr-TR",
+          label: p__('language', "Turkish")
+        },
+        {
+          value: "uk-UA",
+          label: p__('language', "Ukrainian")
+        },
+        {
+          value: "ur-",
+          label: p__('language', "Urdu")
+        },
+        {
+          value: "uz-UZ",
+          label: p__('language', "Uzbek")
+        },
+        {
+          value: "vi-VN",
+          label: p__('language', "Vietnamese")
+        },
+        {
+          value: "zh-HK,yue-HK",
+          label: p__('language', "Chinese (Hong Kong)")
+        },
+        {
+          value: "zh-TW,cmn-TW",
+          label: p__('language', "Chinese (Taiwan)")
+        },
+        {
+          value: "zu-ZA",
+          label: p__('language', "Zulu")
+        },
+      ]
+    },
+    {
+      label: p__('label', 'Use case'),
+      model: 'use_case',
+      options: [
+        {
+          value: 'general',
+          label: p__('use-case', 'General')
+        },
+        {
+          value: 'narration',
+          label: p__('use-case', 'Narration')
+        },
+        {
+          value: "news",
+          label: p__('use-case', "News")
+        },
+        {
+          value: "video-games",
+          label: p__('use-case', "Video games")
+        },
+        {
+          value: "meditation",
+          label: p__('use-case', "Meditation")
+        },
+        {
+          value: "conversational",
+          label: p__('use-case', "Conversational")
+        },
+        {
+          value: "characters",
+          label: p__('use-case', "Characters")
+        },
+        {
+          value: "children-stories",
+          label: p__('use-case', "Children's stories")
+        },
+        {
+          value: "newscast",
+          label: p__('use-case', "Newscast")
+        },
+        {
+          value: "chat",
+          label: p__('use-case', "Chat")
+        },
+        {
+          value: "customer-service",
+          label: p__('use-case', "Customer service")
+        },
+        {
+          value: "narration-professional",
+          label: p__('use-case', "Narration professional")
+        },
+        {
+          value: "newscast-casual",
+          label: p__('use-case', "Newscast casual")
+        },
+        {
+          value: "newscast-formal",
+          label: p__('use-case', "Newscast formal")
+        },
+        {
+          value: "poetry-reading",
+          label: p__('use-case', "Poetry reading")
+        },
+        {
+          value: "narration-relaxed",
+          label: p__('use-case', "Narration relaxed")
+        },
+        {
+          value: "sports-commentary",
+          label: p__('use-case', "Sports commentary")
+        },
+        {
+          value: "sports-commentary-excited",
+          label: p__('use-case', "Sports commentary excited")
+        },
+        {
+          value: "documentary-narration",
+          label: p__('use-case', "Documentary narration")
+        },
+        {
+          value: "live-commercial",
+          label: p__('use-case', "Live commercial")
+        },
+        {
+          value: "advertisement-upbeat",
+          label: p__('use-case', "Advertisement upbeat")
+        },
+        {
+          value: "chat-casual",
+          label: p__('use-case', "Chat casual")
+        },
+        {
+          value: "audiobook",
+          label: p__('use-case', "Audiobook")
+        },
+        {
+          value: "asmr",
+          label: p__('use-case', "ASMR")
+        },
+        {
+          value: "animation",
+          label: p__('use-case', "Animation")
+        },
+        {
+          value: "interactive", 
+          label: p__('use-case', "Interactive")
+        },
+        {
+          value: "informative_educational",
+          label: p__('use-case', "Informative/Educational")
+        }
+      ]
+    },
+    {
+      label: p__('label', 'Tone'),
+      model: 'tone',
+      options: [
+        {
+          value: "authoritative",
+          label: p__('tone', "Authoritative")
+        },
+        {
+          value: "pleasant",
+          label: p__('tone', "Pleasant")
+        },
+        {
+          value: "deep",
+          label: p__('tone', "Deep")
+        },
+        {
+          value: "raspy",
+          label: p__('tone', "Raspy")
+        },
+        {
+          value: "witchy",
+          label: p__('tone', "Witchy")
+        },
+        {
+          value: "foreigner",
+          label: p__('tone', "Foreigner")
+        },
+        {
+          value: "childish",
+          label: p__('tone', "Childish")
+        },
+        {
+          value: "angry",
+          label: p__('tone', "Angry")
+        },
+        {
+          value: "cheerful",
+          label: p__('tone', "Cheerful")
+        },
+        {
+          value: "sad",
+          label: p__('tone', "Sad")
+        },
+        {
+          value: "excited",
+          label: p__('tone', "Excited")
+        },
+        {
+          value: "friendly",
+          label: p__('tone', "Friendly")
+        },
+        {
+          value: "terrified",
+          label: p__('tone', "Terrified")
+        },
+        {
+          value: "shouting",
+          label: p__('tone', "Shouting")
+        },
+        {
+          value: "unfriendly",
+          label: p__('tone', "Unfriendly")
+        },
+        {
+          value: "whispering",
+          label: p__('tone', "Whispering")
+        },
+        {
+          value: "hopeful",
+          label: p__('tone', "Hopeful")
+        },
+        {
+          value: "empathetic",
+          label: p__('tone', "Empathetic")
+        },
+        {
+          value: "calm",
+          label: p__('tone', "Calm")
+        },
+        {
+          value: "disgruntled",
+          label: p__('tone', "Disgruntled")
+        },
+        {
+          value: "fearful",
+          label: p__('tone', "Fearful")
+        },
+        {
+          value: "gentle",
+          label: p__('tone', "Gentle")
+        },
+        {
+          value: "serious",
+          label: p__('tone', "Serious")
+        },
+        {
+          value: "sorry",
+          label: p__('tone', "Sorry")
+        },
+        {
+          value: "embarrassed",
+          label: p__('tone', "Embarrassed")
+        },
+        {
+          value: "envious",
+          label: p__('tone', "Envious")
+        },
+        {
+          value: "lyrical",
+          label: p__('tone', "Lyrical")
+        },
+        {
+          value: "casual",
+          label: p__('tone', "Casual")
+        },
+        {
+          value: "well-rounded",
+          label: p__('tone', "Well-rounded")
+        },
+        {
+          value: "war-veteran",
+          label: p__('tone', "War-veteran")
+        },
+        {
+          value: "ground-reporter",
+          label: p__('tone', "Ground-reporter")
+        },
+        {
+          value: "strong",
+          label: p__('tone', "Strong")
+        },
+        {
+          value: "sailor",
+          label: p__('tone', "Sailor")
+        },
+        {
+          value: "warm",
+          label: p__('tone', "Warm")
+        },
+        {
+          value: "emotional",
+          label: p__('tone', "Emotional")
+        },
+        {
+          value: "intense",
+          label: p__('tone', "Intense")
+        },
+        {
+          value: "shouty",
+          label: p__('tone', "Shouty")
+        },
+        {
+          value: "anxious",
+          label: p__('tone', "Anxious")
+        },
+        {
+          value: "crisp",
+          label: p__('tone', "Crisp")
+        },
+        {
+          value: "seductive",
+          label: p__('tone', "Seductive")
+        },
+        {
+          value: "confident",
+          label: p__('tone', "Confident")
+        },
+        {
+          value: "orotund",
+          label: p__('tone', "Orotund")
+        },
+        {
+          value: "overhyped",
+          label: p__('tone', "Overhyped")
+        },
+        {
+          value: "mature",
+          label: p__('tone', "Mature")
+        },
+      ]
+    },
+    {
+      label: p__('label', 'Age'),
+      model: 'age',
+      options: [
+        {
+          value: "young",
+          label: p__('age-group', "Young")
+        },
+        {
+          value: "middle-aged",
+          label: p__('age-group', "Middle aged")
+        },
+        {
+          value: "old",
+          label: p__('age-group', "Old")
+        }
+      ]
+    },
+    {
+      label: p__('label', 'Gender'),
+      model: 'gender',
+      options: [
+        {
+          value: "male",
+          label: p__('gender', "Male")
+        },
+        {
+          value: "female",
+          label: p__('gender', "Female")
+        },
+        {
+          value: "neutral",
+          label: p__('gender', "Neutral")
+        }
+      ]
+    }
+  ],
+  sort:[
+    {
+      value: null,
+      label: p__('label', 'Default')
+    },
+  
+    {
+      value: 'name',
+      label: p__('label', 'Name')
+    }
+  ]
+} %}
+
+<div class="group/grid" data-state="initial" :data-state="state">
+  <div class="hidden group-data-[state=empty]/grid:block">
+    {% include "sections/empty.twig" with { title: p__('heading', 'Empty result set'), message: __('There are no voice available.'), reset: __('There are no voice matching your search.') } %}
+  </div>
+
+  <div
+    class="grid gap-1 grid-cols-2 md:grid-cols-3 group-data-[state=empty]/grid:hidden">
+    {% for i in range(1,6) %}
+    <div class="hidden group-data-[state=initial]/grid:block">
+      {% include "/snippets/cards/voice.twig" with {placeholder:true} %}
+    </div>
+    {% endfor %}
+
+    <template x-for="voice in resources" :key="voice.id">
+      {% include "/snippets/cards/voice.twig" %}
+    </template>
+  </div>
+</div>
+
+<modal-element name="language-modal">
+  <template x-if="currentResource">
+    <div class="flex flex-col gap-8 modal">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl" x-text="currentResource.name"></h2>
+
+        <button
+          class="flex justify-center items-center w-8 h-8 rounded-full border border-transparent bg-line-dimmed hover:border-line"
+          @click="modal.close()" type="button">
+          <i class="text-xl ti ti-x"></i>
+        </button>
+      </div>
+
+      <div>
+        <div class="flex gap-1 items-center text-sm font-bold">
+          <i class="text-lg ti ti-language"></i>
+          {{ __('Supported languages') }}
+        </div>
+
+        <ul
+          class="flex overflow-y-auto flex-wrap gap-1 items-center mt-4 max-h-80">
+          <template x-for="locale in currentResource.supported_languages">
+            <li
+              class="flex gap-1 items-center px-2 py-1 rounded-md border border-line-dimmed">
+              <x-avatar class="avatar-xs" :title="locale.country_code"
+                :src="`https://flagcdn.com/${locale.country_code.toLowerCase()}.svg`"></x-avatar>
+
+              <span x-text="locale.name || locale.code" class="text-sm"></span>
+            </li>
+          </template>
+        </ul>
+      </div>
+    </div>
+  </template>
+</modal-element>
+{% endblock %}

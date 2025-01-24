@@ -1,0 +1,194 @@
+<x-form>
+    <form class="flex flex-col gap-6" @submit.prevent="install()">
+        <div class="flex items-center gap-2">
+            <button type="button" @click="view('db')" :disabled="isProcessing"
+                class="inline-flex items-center gap-1 text-sm rounded-lg text-content-dimmed hover:text-content">
+                <i class="ti ti-square-rounded-arrow-left-filled"></i>
+            </button>
+
+            <h1>Migration</h1>
+        </div>
+
+        <p>
+            We found existing data in the database. You can either
+            <strong>migrate</strong> the data or <strong>start fresh</strong>.
+        </p>
+
+        <hr>
+
+        <div>
+            <h3>Credit conversion ratios</h3>
+
+            <p class="mt-2">
+                Aikeedo v2.0 introduces a new unified credit system. For
+                successful
+                migration, you need to provide the conversion ratios for each of
+                your existing credit types: tokens images and audio second
+                counts.
+            </p>
+
+            <p class="mt-2 text-xs">
+                Default conversion ratios are provided below calculated with
+                assumption of $1 US = 100 credits and 20% profit margin. You can
+                adjust these values as needed. Once data is migrated you won't
+                be
+                able to change these for migrated orders/subscriptions. However,
+                you'll have the opportunity to change these values later for
+                plans and new orders/subscriptions.
+            </p>
+        </div>
+
+        <div>
+            <label for="ratio-token">
+                <span class="uppercase">
+                    Token/Credit ratio
+                </span>
+            </label>
+
+            <div
+                class="flex mt-2 overflow-hidden text-xs font-bold uppercase border rounded-lg border-line bg bg-intermediate text-intermediate-content-dimmed">
+                <div
+                    class="flex items-center justify-between px-3 w-28 shrink-0">
+                    <span>Token</span>
+                    <span class="text-base">1</span>
+                </div>
+
+                <div
+                    class="flex items-center pl-3 border-l grow bg-main border-line">
+                    <span class="shrink-0">Credit</span>
+
+                    <input type="text" id="ratio-token" min="0"
+                        name="ratio-token"
+                        class="text-right border-none input bg-main focus:ring-0 text-content"
+                        autocomplete="off" placeholder="0.0001875"
+                        x-mask:dynamic="$money($input, '.', '', 9)" required
+                        x-model="model.ratios.token" />
+                </div>
+            </div>
+
+            <div class="h-4 mt-1 text-xs uppercase text-content-dimmed">
+                <template x-if="model.ratios.token != 0">
+                    <span>
+                        <x-credit :data-value="1/model.ratios.token"
+                            format="1 Credit = :count tokens"></x-credit>
+                    </span>
+                </template>
+            </div>
+        </div>
+
+        <div>
+            <label for="ratio-image">
+                <span class="uppercase">
+                    Image/Credit ratio
+                </span>
+            </label>
+
+            <div
+                class="flex mt-2 overflow-hidden text-xs font-bold uppercase border rounded-lg border-line bg bg-intermediate text-intermediate-content-dimmed">
+                <div
+                    class="flex items-center justify-between px-3 w-28 shrink-0">
+                    <span>Image</span>
+                    <span class="text-base">1</span>
+                </div>
+
+                <div
+                    class="flex items-center pl-3 border-l grow bg-main border-line">
+                    <span class="shrink-0">Credit</span>
+
+                    <input type="text" id="ratio-image" min="0"
+                        name="ratio-image"
+                        class="text-right border-none input bg-main focus:ring-0 text-content"
+                        autocomplete="off" placeholder="2"
+                        x-mask:dynamic="$money($input, '.', '', 9)" required
+                        x-model="model.ratios.image" />
+                </div>
+            </div>
+
+            <div class="h-4 mt-1 text-xs uppercase text-content-dimmed">
+                <template x-if="model.ratios.image != 0">
+                    <span>
+                        <x-credit :data-value="1/model.ratios.image"
+                            format="1 Credit = :count image"></x-credit>
+                    </span>
+                </template>
+            </div>
+        </div>
+
+        <div>
+            <label for="ratio-audio">
+                <span class="uppercase">
+                    Audio Seconds/Credit ratio
+                </span>
+            </label>
+
+            <div
+                class="flex mt-2 overflow-hidden text-xs font-bold uppercase border rounded-lg border-line bg bg-intermediate text-intermediate-content-dimmed">
+                <div
+                    class="flex items-center justify-between px-3 w-28 shrink-0">
+                    <span>Second</span>
+                    <span class="text-base">1</span>
+                </div>
+
+                <div
+                    class="flex items-center pl-3 border-l grow bg-main border-line">
+                    <span class="shrink-0">Credit</span>
+
+                    <input type="text" id="ratio-audio" min="0"
+                        name="ratio-audio"
+                        class="text-right border-none input bg-main focus:ring-0 text-content"
+                        autocomplete="off" placeholder="0.2475"
+                        x-mask:dynamic="$money($input, '.', '', 9)" required
+                        x-model="model.ratios.audio" />
+                </div>
+            </div>
+
+            <div class="h-4 mt-1 text-xs uppercase text-content-dimmed">
+                <template x-if="model.ratios.audio != 0">
+                    <span>
+                        <x-credit :data-value="1/model.ratios.audio"
+                            format="1 Credit = :count audio seconds"></x-credit>
+                    </span>
+                </template>
+            </div>
+        </div>
+
+        <template x-if="error">
+            <div class="text-xs text-failure" x-text="error">
+            </div>
+        </template>
+
+        <button type="submit" class="w-full button group"
+            :processing="isProcessing">
+
+            Migrate and finish installation
+
+            <i
+                class="ti ti-square-rounded-arrow-right-filled group-[[processing]]:hidden"></i>
+
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                width="24px" height="24px" viewBox="0 0 50 50"
+                style="enable-background:new 0 0 50 50;" class="spinner"
+                xml:space="preserve">
+                <path fill="currentColor"
+                    d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z">
+                    <animateTransform attributeType="xml"
+                        attributeName="transform" type="rotate" from="0 25 25"
+                        to="360 25 25" dur="0.6s" repeatCount="indefinite">
+                    </animateTransform>
+                </path>
+            </svg>
+        </button>
+
+        <div
+            class="relative flex justify-center my-4 text-xs text-content-dimmed before:absolute before:left-0 before:top-1/2 before:w-full before:h-px before:bg-line-dimmed">
+            <span class="relative z-10 px-4 bg-main">OR</span>
+        </div>
+
+        <button type="button" class="w-full button button-outline"
+            :disabled="isProcessing"
+            @click="model.migrate=false; view('account')">
+            Continue without migration
+        </button>
+    </form>
+</x-form>

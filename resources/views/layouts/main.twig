@@ -1,0 +1,37 @@
+{% extends "/layouts/base.twig" %}
+
+{% block layout %}
+	<div class="lg:flex lg:items-start lg:min-h-screen">
+		{% include "/sections/aside.twig" %}
+
+		<div class="sticky top-0 z-30 block mb-4 border-b lg:hidden bg-main border-line-dimmed group-data-[mobile-menu]/html:border-0">
+			<div class="mx-auto w-full max-w-4xl">
+				{% include "/sections/mobile-nav.twig" %}
+			</div>
+		</div>
+
+		<div class="container">
+			<div class="flex flex-col md:pt-10 min-h-screen grow group-data-[mobile-menu]/html:hidden lg:group-data-[mobile-menu]/html:flex w-full mx-auto max-w-4xl">
+				<main class="flex flex-col gap-5 pb-5 grow md:gap-8 md:pb-8">
+					{% block template %}{% endblock %}
+				</main>
+
+				{% block footer %}
+					{% include "/sections/footer.twig" %}
+				{% endblock %}
+			</div>
+		</div>
+	</div>
+
+	{% include "/snippets/workspace/switcher.twig" %}
+{% endblock %}
+
+{% block scripts %}
+	{% if view_namespace in ['app', 'admin'] %}
+		{% if env.HMR is defined and env.HMR %}
+			<script type="module" src="http://localhost:5173/resources/assets/js/{{ view_namespace }}/index.js"></script>
+		{% else %}
+			<script type="module" src="{{ ('/resources/assets/js/' ~ view_namespace ~ '/index.js') | asset }}"></script>
+		{% endif %}
+	{% endif %}
+{% endblock %}

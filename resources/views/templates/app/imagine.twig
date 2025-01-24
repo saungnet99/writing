@@ -1,0 +1,954 @@
+{% extends "/layouts/main.twig" %}
+{% set mobile_head_button = {
+  link: 'app/imagine'
+} %}
+
+{% set ratio = {
+  label: p__('label', 'Ratio'),
+  model: 'aspect_ratio',
+  options: [
+    { value: '1:1', label: 'Square 1:1' },
+    { value: '16:9', label: 'Landscape 16:9' },
+    { value: '21:9', label: 'Ultrawide 21:9' },
+    { value: '2:3', label: 'Classic 2:3' },
+    { value: '3:2', label: 'Digital 3:2' },
+    { value: '4:5', label: 'Social Media 4:5' },
+  ]
+} %}
+
+{% set stableadapter = {
+  prompt_length: null,
+  negative_prompt: true,
+  sizes: [],
+  params: [
+    {
+      label: p__('label', 'Style'),
+      model: 'style_preset',
+      options: [
+        { value: '3d-model', label: p__('art-style', '3d model') },
+        { value: 'analog-film', label: p__('art-style', 'Analog film') },
+        { value: 'anime', label: p__('art-style', 'Anime') },
+        { value: 'cinematic', label: p__('art-style', 'Cinematic') },
+        { value: 'comic-book', label: p__('art-style', 'Comic book') },
+        { value: 'digital-art', label: p__('art-style', 'Digital art') },
+        { value: 'enhance', label: p__('art-style', 'Enhance') },
+        { value: 'fantasy-art', label: p__('art-style', 'Fantasy art') },
+        { value: 'isometric', label: p__('art-style', 'Isometric') },
+        { value: 'line-art', label: p__('art-style', 'Line art') },
+        { value: 'low-poly', label: p__('art-style', 'Low poly') },
+        { value: 'modeling-compound', label: p__('art-style', 'Modeling compound') },
+        { value: 'neon-punk', label: p__('art-style', 'Neon punk') },
+        { value: 'origami', label: p__('art-style', 'Origami') },
+        { value: 'photographic', label: p__('art-style', 'Photographic') },
+        { value: 'pixel-art', label: p__('art-style', 'Pixel art') },
+        { value: 'tile-texture', label: p__('art-style', 'Tile texture') }
+      ]
+    },
+    {
+      label: p__('label', 'Sampler'),
+      model: 'sampler',
+      options: [
+        { value: 'DDIM', label: 'DDIM' },
+        { value: 'DDPM', label: 'DDPM' },
+        { value: 'K_DPMPP_2M', label: 'K_DPMPP_2M' },
+        { value: 'K_DPMPP_2S_ANCESTRAL', label: 'K_DPMPP_2S_ANCESTRAL' },
+        { value: 'K_DPM_2', label: 'K_DPM_2' },
+        { value: 'K_DPM_2_ANCESTRAL', label: 'K_DPM_2_ANCESTRAL' },
+        { value: 'K_EULER', label: 'K_EULER' },
+        { value: 'K_EULER_ANCESTRAL', label: 'K_EULER_ANCESTRAL' },
+        { value: 'K_HEUN', label: 'K_HEUN' },
+        { value: 'K_LMS', label: 'K_LMS' },
+      ]
+    },
+    {
+      label: p__('label', 'Clip Guidance Preset'),
+      model: 'clip_guidance_preset',
+      options: [
+        { value: 'NONE', label: 'NONE' },
+        { value: 'FAST_BLUE', label: 'FAST_BLUE' },
+        { value: 'FAST_GREEN', label: 'FAST_GREEN' },
+        { value: 'SIMPLE', label: 'SIMPLE' },
+        { value: 'SLOW', label: 'SLOW' },
+        { value: 'SLOWER', label: 'SLOWER' },
+        { value: 'SLOWEST', label: 'SLOWEST' }
+      ]
+    }
+  ]
+} %}
+
+{% set adapters = [
+  {
+    is_available: option.openai.api_secret_key is defined and option.openai.api_secret_key is not empty,
+    models: [
+      {
+        model: 'dall-e-3',
+        name: 'OpenAI DALL·E 3',
+        short_name: 'DALL·E 3',
+        prompt_length: 4000,
+        negative_prompt: false,
+        is_enabled: workspace.subscription.plan.config.models['dall-e-3'] ?? false,
+        is_available: option.features.imagine.models is not defined or 'dall-e-3' in option.features.imagine.models,
+        sizes: [
+          { width: 1024, height: 1024 },
+          { width: 1792, height: 1024 },
+          { width: 1024, height: 1792 }
+        ],
+        params: [
+          {
+            label: p__('label', 'Quality'),
+            model: 'quality',
+            options: [
+              { value: 'standard', label: __('Standard') },
+              { value: 'hd', label: __('HD') }
+            ]
+          },
+          {
+            label: p__('label', 'Style'),
+            model: 'style',
+            options: [
+              { value: 'vivid', label: __('Vivid') },
+              { value: 'natural', label: __('Natural') }
+            ]
+          }
+        ]
+      },
+
+      {
+        model: 'dall-e-2',
+        name: 'OpenAI DALL·E 2',
+        short_name: 'DALL·E 2',
+        prompt_length: 1000,
+        negative_prompt: false,
+        is_enabled: workspace.subscription.plan.config.models['dall-e-2'] ?? false,
+        is_available: option.features.imagine.models is not defined or 'dall-e-2' in option.features.imagine.models,
+        sizes: [
+          { width: 256, height: 256 },
+          { width: 512, height: 512 },
+          { width: 1024, height: 1024 }
+        ],
+        params: [
+        ]
+      }
+    ]
+  },
+
+  {
+    is_available: option.falai.api_key is defined and option.falai.api_key is not empty,
+    models: [
+      {
+        model: 'flux/dev',
+        name: 'FLUX.1 [dev]',
+        short_name: 'FLUX.1 [dev]',
+        prompt_length: null,
+        negative_prompt: false,
+        is_enabled: workspace.subscription.plan.config.models['flux/dev'] ?? false,
+        is_available: option.features.imagine.models is not defined or 'flux/dev' in option.features.imagine.models,
+        sizes: [],
+        params: [
+          {
+            label: p__('label', 'Size'),
+            model: 'size',
+            options: [
+              { value: 'square_hd', label: __('Square HD') },
+              { value: 'square', label: __('Square') },
+              { value: 'portrait_4_3', label: __('Portrait 4:3') },
+              { value: 'portrait_16_9', label: __('Portrait 16:9') },
+              { value: 'landscape_4_3', label: __('Landscape 4:3') },
+              { value: 'landscape_16_9', label: __('Landscape 16:9') },
+            ]
+          }
+        ]
+      },
+
+      {
+        model: 'flux/schnell',
+        name: 'FLUX.1 [schnell]',
+        short_name: 'FLUX.1 [schnell]',
+        prompt_length: null,
+        negative_prompt: false,
+        is_enabled: workspace.subscription.plan.config.models['flux/schnell'] ?? false,
+        is_available: option.features.imagine.models is not defined or 'flux/schnell' in option.features.imagine.models,
+        sizes: [],
+        params: [
+          {
+            label: p__('label', 'Size'),
+            model: 'size',
+            options: [
+              { value: 'square_hd', label: __('Square HD') },
+              { value: 'square', label: __('Square') },
+              { value: 'portrait_4_3', label: __('Portrait 4:3') },
+              { value: 'portrait_16_9', label: __('Portrait 16:9') },
+              { value: 'landscape_4_3', label: __('Landscape 4:3') },
+              { value: 'landscape_16_9', label: __('Landscape 16:9') },
+            ]
+          }
+        ]
+      },
+
+      {
+        model: 'flux-pro',
+        name: 'FLUX.1 [pro]',
+        short_name: 'FLUX.1 [pro]',
+        prompt_length: null,
+        negative_prompt: false,
+        is_enabled: workspace.subscription.plan.config.models['flux-pro'] ?? false,
+        is_available: option.features.imagine.models is not defined or 'flux-pro' in option.features.imagine.models,
+        sizes: [],
+        params: [
+          {
+            label: p__('label', 'Size'),
+            model: 'size',
+            options: [
+              { value: 'square_hd', label: __('Square HD') },
+              { value: 'square', label: __('Square') },
+              { value: 'portrait_4_3', label: __('Portrait 4:3') },
+              { value: 'portrait_16_9', label: __('Portrait 16:9') },
+              { value: 'landscape_4_3', label: __('Landscape 4:3') },
+              { value: 'landscape_16_9', label: __('Landscape 16:9') },
+            ]
+          }
+        ]
+      },
+
+      {
+        model: 'flux-realism',
+        name: 'FLUX Realism',
+        short_name: 'FLUX Realism',
+        prompt_length: null,
+        negative_prompt: false,
+        is_enabled: workspace.subscription.plan.config.models['flux-realism'] ?? false,
+        is_available: option.features.imagine.models is not defined or 'flux-realism' in option.features.imagine.models,
+        sizes: [],
+        params: [
+          {
+            label: p__('label', 'Size'),
+            model: 'size',
+            options: [
+              { value: 'square_hd', label: __('Square HD') },
+              { value: 'square', label: __('Square') },
+              { value: 'portrait_4_3', label: __('Portrait 4:3') },
+              { value: 'portrait_16_9', label: __('Portrait 16:9') },
+              { value: 'landscape_4_3', label: __('Landscape 4:3') },
+              { value: 'landscape_16_9', label: __('Landscape 16:9') },
+            ]
+          }
+        ]
+      },
+    ]
+  },
+
+  {
+    is_available: option.stabilityai.api_key is defined and option.stabilityai.api_key is not empty,
+    models: [
+      stableadapter|merge(
+        {
+          model: 'sd-ultra',
+          name: 'Stable Diffusion Ultra',
+          short_name: 'SD Ultra',
+          is_enabled: workspace.subscription.plan.config.models['sd-ultra'] ?? false,
+          is_available: option.features.imagine.models is not defined or 'sd-ultra' in option.features.imagine.models,
+          params: [ratio]
+        }
+      ),
+
+      stableadapter|merge(
+        {
+          model: 'sd-core',
+          name: 'Stable Diffusion Core',
+          short_name: 'SD Core',
+          is_enabled: workspace.subscription.plan.config.models['sd-core'] ?? false,
+          is_available: option.features.imagine.models is not defined or 'sd-core' in option.features.imagine.models,
+          params: [
+            ratio,
+            {
+              label: p__('label', 'Style'),
+              model: 'style_preset',
+              options: [
+                { value: '3d-model', label: p__('art-style', '3d model') },
+                { value: 'analog-film', label: p__('art-style', 'Analog film') },
+                { value: 'anime', label: p__('art-style', 'Anime') },
+                { value: 'cinematic', label: p__('art-style', 'Cinematic') },
+                { value: 'comic-book', label: p__('art-style', 'Comic book') }, 
+                { value: 'digital-art', label: p__('art-style', 'Digital art') },
+                { value: 'enhance', label: p__('art-style', 'Enhance') },
+                { value: 'fantasy-art', label: p__('art-style', 'Fantasy art') },
+                { value: 'isometric', label: p__('art-style', 'Isometric') },
+                { value: 'line-art', label: p__('art-style', 'Line art') },
+                { value: 'low-poly', label: p__('art-style', 'Low poly') },
+                { value: 'modeling-compound', label: p__('art-style', 'Modeling compound') },
+                { value: 'neon-punk', label: p__('art-style', 'Neon punk') },
+                { value: 'origami', label: p__('art-style', 'Origami') },
+                { value: 'photographic', label: p__('art-style', 'Photographic') },
+                { value: 'pixel-art', label: p__('art-style', 'Pixel art') },
+                { value: 'tile-texture', label: p__('art-style', 'Tile texture') }
+              ]
+            }
+          ]
+        }
+      ),
+
+      stableadapter|merge(
+        {
+          model: 'sd3-large',
+          name: 'Stable Diffusion 3 Large',
+          short_name: 'SD3 Large',
+          is_enabled: workspace.subscription.plan.config.models['sd3-large'] ?? false,
+          is_available: option.features.imagine.models is not defined or 'sd3-large' in option.features.imagine.models,
+          params: [ratio]
+        }
+      ),
+
+      stableadapter|merge(
+        {
+          model: 'sd3-large-turbo',
+          name: 'Stable Diffusion 3 Large Turbo',
+          short_name: 'SD3 Large Turbo',
+          is_enabled: workspace.subscription.plan.config.models['sd3-large-turbo'] ?? false,
+          is_available: option.features.imagine.models is not defined or 'sd3-large-turbo' in option.features.imagine.models,
+          params: [ratio]
+        }
+      ),
+
+      stableadapter|merge(
+        {
+          model: 'sd3-medium',
+          name: 'Stable Diffusion 3 Medium',
+          short_name: 'SD3 Medium',
+          is_enabled: workspace.subscription.plan.config.models['sd3-medium'] ?? false,
+          is_available: option.features.imagine.models is not defined or 'sd3-medium' in option.features.imagine.models,
+          params: [ratio]
+        }
+      ),
+
+      stableadapter|merge(
+        {
+          model: 'stable-diffusion-xl-1024-v1-0',
+          name: 'Stable Diffusion XL',
+          is_enabled: workspace.subscription.plan.config.models['stable-diffusion-xl-1024-v1-0'] ?? false,
+          is_available: option.features.imagine.models is not defined or 'stable-diffusion-xl-1024-v1-0' in option.features.imagine.models,
+          short_name: 'SDXL',
+          sizes: [
+            { width: 1024, height: 1024 },
+            { width: 1152, height: 896 },
+            { width: 1216, height: 832 },
+            { width: 1344, height: 768 },
+            { width: 1536, height: 640 },
+            { width: 640, height: 1536 },
+            { width: 768, height: 1344 },
+            { width: 832, height: 1216 },
+            { width: 896, height: 1152 },
+          ]
+        }
+      ),
+
+      stableadapter|merge(
+        {
+          model: 'stable-diffusion-v1-6',
+          name: 'Stable Diffusion v1.6',
+          short_name: 'SD 1.6',
+          is_enabled: workspace.subscription.plan.config.models['stable-diffusion-v1-6'] ?? false,
+          is_available: option.features.imagine.models is not defined or 'stable-diffusion-v1-6' in option.features.imagine.models,
+          sizes: [
+            { width: 320, height: 320 },
+            { width: 640, height: 640 },
+            { width: 1280, height: 1280 },
+            { width: 1536, height: 1536 },
+
+            { width: 1024, height: 1024 },
+            { width: 1152, height: 896 },
+            { width: 1216, height: 832 },
+            { width: 1344, height: 768 },
+            { width: 640, height: 1536 },
+            { width: 768, height: 1344 },
+            { width: 832, height: 1216 },
+            { width: 896, height: 1152 },
+          ]
+        }
+      ),
+    ]
+  },
+
+  {
+    is_available: option.clipdrop.api_key is defined and option.clipdrop.api_key is not empty,
+    models: [
+      {
+        model: 'clipdrop',
+        name: 'Clipdrop',
+        short_name: 'Clipdrop',
+        prompt_length: 1000,
+        negative_prompt: false,
+        is_enabled: workspace.subscription.plan.config.models['clipdrop'] ?? false,
+        is_available: option.features.imagine.models is not defined or 'clipdrop' in option.features.imagine.models,
+        sizes: [
+          { width: 1024, height: 1024 },
+        ],
+        params: [
+        ]
+      }
+    ]
+  }
+] %}
+
+{% set samples = [
+  'With a surreal mix of elegance and eeriness, a kitsune with a glistening golden fur coat stands amidst a dusky forest in a high fashion photograph. The image captures the mystical creature\'s piercing amber eyes and sleek, shimmering tails, as it exudes an aura of ancient power and enigmatic allure. Every detail, from the intricate patterns on its fur to the hauntingly beautiful surroundings, is rendered with impeccable precision and depth, creating a mesmerizing and unforgettable visual experience.',
+  'A magnificently garish sorcerer, their ostentatious costume adorned with gaudy jewels and shimmering fabrics, exudes an air of opulent tackiness mixed with undeniable power. Picture a surreal photograph capturing the sorcerer in a dramatic pose, bathed in ethereal lighting that highlights every intricate detail of their over-the-top ensemble. The image radiates with a vividness that practically leaps off the page, showcasing the intricate craftsmanship and extravagance of the subject with dazzling clarity.',
+  'In the misty embrace of a moonlit forest, a bewildering bizarre centaur emerges: half man, half equine, adorned in vibrant bohemian attire. This enigmatic being is captured in a hauntingly beautiful photograph, where every detail is sharp and mesmerizing. The centaur\'s human-like torso is covered in intricate tattoos that seem to come alive in the dim light, while its equine half boasts a luxurious mane and tail that shimmer with otherworldly colors. The background is a dreamlike blur of ancient trees and ethereal wisps of fog, adding to the mystical atmosphere of the scene. Its eyes hold a spark of wild magic, inviting viewers into a world of enchantment and wonder.',
+  'A mystifying and ethereal mauve-tinted dimensional drifter, appearing as a translucent entity traversing multiple planes of existence. This mesmerizing figure is captured in a stunningly detailed digital painting, showcasing intricate patterns and swirls of energy that seem to dance around the enigmatic being. The artist\'s masterful use of light and shadow creates a sense of depth and movement, making the drifter appear both otherworldly and strangely familiar. The overall composition is a breathtaking display of imagination and skill, drawing the viewer into a realm of wonder and possibility.',
+  'Ethereally gliding through a celestial realm, the elysian timeless void voyager floats serenely amidst swirling nebulae and shimmering star clusters. This concept art painting captures the awe-inspiring beauty of an otherworldly being in a state of graceful motion. The colors are vivid and luminescent, creating a sense of transcendence and wonder. The intricate details of the voyager\'s celestial robes and radiant aura are rendered with exquisite precision, making the viewer feel as though they are witnessing a truly divine being. The overall atmosphere is one of pure, celestial tranquility, inviting the viewer to contemplate the mysteries of the universe.',
+
+  'A watercolor illustration of a magical forest with glowing fireflies',
+  'A sketch of a wizard riding a unicorn through a rainbow',
+  'A surrealistic oil painting of a flying fish with butterfly wings',
+  'A collage of vintage photographs forming the shape of a heart',
+  'A charcoal drawing of a haunted house on a foggy hill',
+  'A digital illustration of a cybernetic mermaid swimming among neon jellyfish',
+  'A sculpture of a tree made entirely of recycled plastic bottles',
+  'A graffiti mural of a phoenix rising from the ashes on a city wall',
+  'A mosaic portrait of Albert Einstein made from computer keys',
+  'A cartoon drawing of a superhero squirrel saving the day in a city park',
+  'A pop art style painting of Marilyn Monroe using Rubik\'s cubes as pixels',
+  'A steampunk-inspired illustration of a mechanical octopus guarding a sunken treasure chest',
+  'A minimalist ink sketch of a teacup floating in mid-air',
+  'A clay sculpture of a family of penguins sledding down an icy hill',
+  'An abstract digital artwork of swirling galaxies merging together',
+  'A mixed media piece featuring origami cranes flying over a city skyline at dusk',
+  'A caricature drawing of famous historical figures playing poker',
+  'A mural of a cosmic elephant spraying galaxies from its trunk onto a starry sky',
+  'A digital painting of a futuristic cityscape with flying cars and holographic billboards',
+  'A stained glass window depicting scenes from classic fairy tales',
+  'A paper-cut silhouette of a jungle scene with wild animals and lush foliage',
+  'A chalk drawing of a smiling sun wearing sunglasses on a chalkboard',
+  'A mixed media collage of vintage postage stamps forming a map of the world',
+  'A sculpture of a phoenix made entirely of melted candle wax',
+  'A surrealistic painting of a clock melting over a desert landscape',
+  'A watercolor portrait of a cat wearing a crown and holding a scepter',
+  'An abstract sculpture representing the concept of time using clock parts',
+  'A digital illustration of a cyberpunk city with towering skyscrapers and flying drones',
+  'A mosaic of colorful tiles depicting a scene from under the sea',
+  'A painting of a dreamy landscape with floating islands and waterfalls made of clouds',
+  'A cartoon drawing of a group of animals having a picnic in the park',
+  'A sculpture of a dragon made entirely of recycled metal scraps',
+  'A digital artwork of a magical library where books come to life at night',
+  'A graffiti mural of a giant robot battling a sea monster in the streets',
+  'A surrealistic oil painting of a forest where the trees have eyes and the flowers have mouths',
+  'A mosaic portrait of a famous musician made entirely of broken vinyl records',
+  'A sketch of a futuristic city on Mars with domed habitats and space elevators',
+  'A clay sculpture of a whimsical creature with the body of a cat and the wings of a butterfly',
+  'An abstract digital artwork of geometric shapes dancing in a kaleidoscope of colors',
+  'A paper-cut silhouette of a carnival scene with carousel horses and ferris wheels',
+  'A chalk drawing of a magical doorway leading to a secret garden',
+  'A mixed media collage of vintage comic book panels forming a city skyline',
+  'A sculpture of a phoenix rising from the ashes made entirely of glass shards',
+  'A surrealistic painting of a giant teapot floating in a stormy sea',
+  'A watercolor portrait of a panda wearing a top hat and monocle',
+  'An abstract sculpture representing the chaos of the universe using tangled wires'
+] %}
+
+{% set active_menu = 'imagine' %}
+{% set xdata %}imagine(`{{ option.features.imagine.default_model ?? 'dall-e-3'}}`,
+{{ adapters|json_encode }},
+{{ samples|json_encode }}, {{ (image ?? null )|json_encode() }}){% endset %}
+{% block title p__('title', 'Imagine')|title %}
+
+{% block template %}
+<div class="flex flex-col gap-4 grow">
+  <div class="hidden md:block">
+    {% include "snippets/back.twig" with {link: 'app/library/images', label: p__('button', 'Library'), icon: 'square-rounded-arrow-up-filled'} %}
+
+    <div class="relative mt-4">
+      <div
+        class="absolute top-0 left-0 z-10 w-28 h-full bg-gradient-to-r to-transparent pointer-events-none from-main">
+      </div>
+
+      <div class="flex">
+        <div
+          class="flex overflow-hidden gap-2 justify-end items-center pr-1 h-16">
+          <template x-if="history === null">
+            <template x-for="i in 15" :key="i">
+              <div class="size-14 shrink-0 loading">
+              </div>
+            </template>
+          </template>
+
+          <template x-if="history && history.length > 0">
+            <template x-for="i in history" :key="i.id">
+              <a :href="`app/imagine/${i.id}`"
+                class="block overflow-hidden relative rounded-lg size-14 shrink-0 hover:outline focus:outline outline-2 outline-offset-2 outline-line"
+                @click.prevent="select(i);">
+                <template x-if="i.output_file.blur_hash">
+                  <canvas is="x-blurhash"
+                    class="absolute top-0 left-0 w-full h-full" width="56"
+                    height="56" :hash="i.output_file.blur_hash"
+                    type="color"></canvas>
+                </template>
+
+                <img :src="i.output_file.url" :alt="i.prompt"
+                  class="object-cover absolute top-0 left-0 w-full h-full">
+              </a>
+            </template>
+          </template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="md:my-6"
+    :class="preview || isProcessing ? '' : 'flex justify-center md:my-auto'">
+    <template x-if="!preview && !isProcessing">
+      <div class="my-10 text-center md:my-0">
+        <div
+          class="mx-auto w-16 h-16 bg-gradient-to-br from-[#E6C0FE] to-[#984CF8] tool-icon">
+          <div class="bg-gradient-to-br from-[#E6C0FE] to-[#984CF8]"></div>
+
+          {% include "snippets/icons/imagine.twig" %}
+        </div>
+
+        <h1 class="mt-6">{{ p__('heading', 'Imagine') }}</h1>
+        <p class="mt-1 text-lg font-light text-content-dimmed">
+          {{ __('Use your imagination to create awesome images.') }}</p>
+      </div>
+    </template>
+
+    <template x-if="isProcessing">
+      <div class="flex flex-col gap-10">
+        <div class="flex flex-col gap-4">
+          <div class="flex flex-col gap-3 grow">
+            <div class="w-2/3 h-6 loading">
+            </div>
+
+            <div class="mb-1">
+              <div class="w-64 h-4 loading"></div>
+            </div>
+          </div>
+
+          <div class="flex gap-4 items-center">
+            <span class="my-1 w-16 h-3 loading"></span>
+            <span class="my-1 w-16 h-3 loading"></span>
+            <span class="my-1 w-16 h-3 loading"></span>
+
+            <div class="my-1 ml-auto size-5 loading"></div>
+            <div class="my-1 size-5 loading"></div>
+            <div class="my-1 size-5 loading"></div>
+          </div>
+        </div>
+
+        <div class="p-1 rounded-lg border group border-line">
+          <div class="relative rounded bg-line-dimmed">
+            <div class="pt-[68.49%] loading relative text-content-super-dimmed"
+              :style="`padding-top: ${ratio > 0 ? ratio * 100 : 0.6849 * 100}%`">
+              <svg version=" 1.1" xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                width="56px" height="56px" viewBox="0 0 50 50"
+                style="enable-background:new 0 0 50 50;"
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                xml:space="preserve">
+                <path fill="currentColor"
+                  d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z">
+                  <animateTransform attributeType="xml"
+                    attributeName="transform" type="rotate" from="0 25 25"
+                    to="360 25 25" dur="0.6s" repeatCount="indefinite">
+                  </animateTransform>
+                </path>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <template x-if="preview && !isProcessing">
+      <div class="flex flex-col gap-10">
+        <div class="flex flex-col gap-4">
+          <div>
+            <div class="text-xl font-editor-heading"
+              x-text="preview.params.prompt || '{{ __('Untitled resource') }}'"
+              :class="preview.params.prompt.length > 80 ? 'text-base' : 'text-2xl font-medium'">
+            </div>
+
+            <div class="mt-1">
+              <x-uuid x-text="preview.id"></x-uuid>
+            </div>
+          </div>
+
+          <div class="flex gap-4 items-center">
+            {% include "snippets/audience.twig" with {ref: 'preview'} %}
+
+            <span
+              class="hidden gap-1 items-center text-sm whitespace-nowrap text-content-dimmed md:flex">
+              <i class="text-base ti ti-cpu-2"></i>
+              <span x-text="preview.model" class="uppercase"></span>
+            </span>
+
+            <span
+              class="hidden gap-1 items-center text-sm whitespace-nowrap md:flex text-content-dimmed">
+              <i class="text-base ti ti-maximize"></i>
+
+              <span>
+                <span x-text="preview.output_file.width"></span>
+                x
+                <span x-text="preview.output_file.height"></span>
+              </span>
+            </span>
+
+            <span
+              class="flex gap-1 items-center text-sm whitespace-nowrap text-content-dimmed">
+              <i class="text-base ti ti-coins"></i>
+              <x-credit :data-value="preview.cost"
+                format="{{ __(":count credits") }}"></x-credit>
+            </span>
+
+            <a :href="preview.output_file.url" type="button"
+              download="image.png" target="_blank"
+              class="ml-auto transition-all text-content-dimmed hover:text-content">
+              <i class="text-xl ti ti-download"></i>
+            </a>
+
+            <button type="button" @click="copyImgToClipboard(preview)"
+              class="transition-all text-content-dimmed hover:text-content">
+              <i class="text-xl ti ti-copy"></i>
+            </button>
+
+            <button type="button" @click="modal.open('delete-modal');"
+              class="transition-all text-content-dimmed hover:text-failure">
+              <i class="text-xl ti ti-trash"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="p-1 rounded-lg border group border-line">
+          <div class="relative rounded bg-line-dimmed">
+            <div class="pt-[68.49%]"
+              :style="`padding-top: ${ratio > 0 ? ratio * 100 : 0.6849 * 100}%`">
+            </div>
+
+            <template x-if="preview.output_file.blur_hash">
+              <canvas is="x-blurhash"
+                class="absolute top-0 left-0 w-full h-full rounded loading"
+                :width="16" :height="9"
+                :hash="preview.output_file.blur_hash"></canvas>
+            </template>
+
+            <img :src="preview.output_file.url"
+              :alt="preview.params.prompt || ''"
+              class="object-cover absolute top-0 left-0 w-full h-full rounded"
+              :width="preview.output_file.width"
+              :height="preview.output_file.height">
+
+            <div
+              class="absolute top-0 left-0 w-full h-full bg-gradient-to-bl via-transparent to-transparent opacity-0 transition-all from-main group-hover:opacity-50">
+            </div>
+
+            <a :href="preview.output_file.url" target="_blank"
+              x-tooltip.raw="{{ __('Open in full size') }}"
+              class="absolute top-0 right-0 opacity-0 transition-all scale-90 text-content group-hover:opacity-100 group-hover:scale-100 group-hover:top-2 group-hover:right-2">
+              <i class="text-4xl ti ti-arrow-up-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </template>
+  </div>
+</div>
+
+<modal-element name="delete-modal">
+  <template x-if="preview">
+    <form class="modal" @submit.prevent="remove(preview);">
+      <div
+        class="flex relative justify-center items-center mx-auto w-24 h-24 rounded-full text-failure/25">
+
+        <svg class="absolute top-0 left-0 w-full h-full" width="112"
+          height="112" viewBox="0 0 112 112" fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+          <circle cx="56" cy="56" r="55.5" stroke="currentColor"
+            stroke-dasharray="8 8" />
+        </svg>
+
+        <div
+          class="flex justify-center items-center w-20 h-20 text-4xl rounded-full transition-all bg-failure/25 text-failure">
+          <i class="text-4xl ti ti-trash"></i>
+        </div>
+      </div>
+
+      <div class="mt-4 text-lg text-center">
+
+        {{ __('Do you really want to delete the image?') }}
+      </div>
+
+      <div class="flex gap-4 justify-center items-center mt-10">
+        <button class="button button-outline" @click="modal.close()"
+          type="button">
+          {{ p__('button', 'No, cancel') }}
+        </button>
+
+        <button class="button button-failure" type="submit"
+          :processing="isDeleting">
+          {% include "/snippets/spinner.twig" %}
+
+          {{ p__('button', 'Yes, delete') }}
+        </button>
+      </div>
+    </form>
+  </template>
+</modal-element>
+{% endblock %}
+
+{% block footer %}
+<div class="sticky bottom-0 z-40 mt-auto">
+  <div class="h-4 bg-gradient-to-t to-transparent from-main">
+  </div>
+
+  <div class="bg-main">
+    <form
+      @submit.prevent="{{ workspace.subscription.plan.config.imagine.is_enabled is defined and workspace.subscription.plan.config.imagine.is_enabled ? 'submit($el)' : ''   }}">
+      <div class="flex justify-between items-end mb-3">
+        <div>
+          <div class="flex gap-0 items-center 5">
+            <span class="font-bold">{{ p__('heading', 'Text to image') }}</span>
+            <i class="text-base ti ti-corner-right-up text-content-dimmed"></i>
+          </div>
+
+          <div class="flex gap-2 items-center">
+            <div class="text-sm text-content-dimmed">
+              {{ __('Generate images from text') }}
+            </div>
+
+            <button type="button" class="button button-xs button-dimmed"
+              @click="surprise">
+              {{ p__('button', 'Surprise me') }}
+            </button>
+          </div>
+        </div>
+
+        <div class="relative"
+          @click.outside=" $refs.context.removeAttribute('data-open')" x-data>
+
+          <button type="button" class="button button-xs button-dimmed"
+            @click="$refs.context.toggleAttribute('data-open')">
+            <span x-text="adapter.short_name"></span>
+            <i class="ti ti-chevron-down"></i>
+          </button>
+
+          <div class="menu menu-tr" x-ref="context">
+            <ul>
+              <template x-for="a in adapters">
+                <li>
+                  <button type="button"
+                    class="px-4 py-2 w-full text-left blockl hover:bg-intermediate hover:text-intermediate-content"
+                    @click="adapter = a; $refs.context.removeAttribute('data-open');">
+
+                    <span x-text="a.name"></span>
+                  </button>
+                </li>
+              </template>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="relative p-1 rounded-xl bg-line-dimmed has-[textarea:focus]:bg-gradient-to-br has-[textarea:focus]:from-gradient-from has-[textarea:focus]:to-gradient-to">
+
+        <template x-if="showSettings && adapter">
+          <div
+            class="absolute left-0 bottom-full z-10 mb-2 w-full rounded-xl border bg-main border-line-dimmed"
+            @click.outside="showSettings = false">
+            <div
+              class="flex justify-between items-center p-4 border-b border-line-dimmed">
+              <div class="text-sm font-bold" x-text="adapter.name">
+              </div>
+
+              <template
+                x-if="JSON.stringify(original) != JSON.stringify(params)">
+                <button type="button" class="text-sm hover:underline"
+                  @click="reset">
+                  {{ p__('button', 'Reset') }}
+                </button>
+              </template>
+            </div>
+
+            <div class="flex gap-2 items-center p-4">
+              <template x-if="adapter.sizes && adapter.sizes.length > 0">
+                <div class="relative group" x-data
+                  :data-selected="params.width && params.height"
+                  @click.outside=" $refs.filter.removeAttribute('data-open')">
+
+                  <button type="button"
+                    class="relative whitespace-nowrap flex items-center gap-1 px-2 h-8 text-sm border border-transparent rounded-lg text-content-dimmed group-data-[selected]:border-line hover:group-data-[selected]:border-line disabled:opacity-50"
+                    @click="$refs.filter.toggleAttribute('data-open')"
+                    x-tooltip.raw="{{ p__('label', 'Size') }}">
+
+                    <i
+                      class="text-xl ti ti-square-rounded-plus-filled group-data-[selected]:hidden"></i>
+
+                    <i class="hidden text-xl text-content ti ti-square-rounded-x-filled group-data-[selected]:block transition-all hover:scale-125 hover:rotate-90"
+                      @click.stop="params.width=null; params.height=null;"></i>
+
+                    <span class="group-data-[selected]:hidden">
+                      {{ p__('label', 'Size') }}
+                    </span>
+
+                    <span
+                      class="hidden group-data-[selected]:flex items-center gap-0.5 text-content font-medium">
+                      <span x-text="params.width"></span>
+                      <i class="text-sm ti ti-x text-content-dimmed"></i>
+                      <span x-text="params.height"></span>
+                    </span>
+
+                    <svg
+                      class="absolute top-0 left-0 w-full h-full rounded-lg text-line-dimmed group-hover:text-line group-data-[selected]:hidden"
+                      width="100%" height="100%" fill="none"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <rect cx="56" width="100%" height="100%"
+                        stroke="currentColor" stroke-dasharray="4 2" rx="8"
+                        ry="8" stroke-width="2" />
+                    </svg>
+                  </button>
+
+                  <div class="max-h-72 menu menu-tl"
+                    @click="$el.removeAttribute('data-open')" x-ref="filter">
+                    <ul class="text-sm">
+                      <template x-for="size in adapter.sizes">
+                        <li>
+                          <button type="button"
+                            class="flex gap-0.5 items-center px-4 py-2 w-full text-left hover:bg-intermediate"
+                            @click="params.width = size.width; params.height=size.height;">
+                            <span x-text="size.width"></span>
+                            <i class="text-sm ti ti-x text-content-dimmed"></i>
+                            <span x-text="size.height"></span>
+                          </button>
+                        </li>
+                      </template>
+                    </ul>
+                  </div>
+                </div>
+              </template>
+
+              <template x-for="f in adapter.params">
+                <div class="relative group" x-data
+                  :data-selected="params[f.model] !== undefined &&  params[f.model] && f.options.length > 0"
+                  @click.outside="$refs.filter.removeAttribute('data-open')">
+
+                  <button type="button"
+                    class="relative whitespace-nowrap flex items-center gap-1 px-2 h-8 text-sm border border-transparent rounded-lg text-content-dimmed group-data-[selected]:border-line hover:group-data-[selected]:border-line disabled:opacity-50"
+                    @click="$refs.filter.toggleAttribute('data-open')"
+                    x-tooltip="f.label" :disabled="f.options.length < 1">
+
+                    <i
+                      class="text-xl ti ti-square-rounded-plus-filled group-data-[selected]:hidden"></i>
+
+                    <i class="hidden text-xl text-content ti ti-square-rounded-x-filled group-data-[selected]:block transition-all hover:scale-125 hover:rotate-90"
+                      @click.stop="delete params[f.model]"></i>
+
+                    <span x-text="f.label"
+                      class="group-data-[selected]:hidden"></span>
+
+                    <span
+                      class="hidden group-data-[selected]:inline text-content font-medium"
+                      x-text="f.options.find(o => o.value == params[f.model])?.label"></span>
+
+                    <svg
+                      class="absolute top-0 left-0 w-full h-full rounded-lg text-line-dimmed group-hover:text-line group-data-[selected]:hidden"
+                      width="100%" height="100%" fill="none"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <rect cx="56" width="100%" height="100%"
+                        stroke="currentColor" stroke-dasharray="4 2" rx="8"
+                        ry="8" stroke-width="2" />
+                    </svg>
+                  </button>
+
+                  <div class="max-h-72 menu menu-tl"
+                    @click="$el.removeAttribute('data-open')" x-ref="filter">
+                    <ul class="text-sm">
+                      <template x-for="option in f.options">
+                        <li>
+                          <button type="button"
+                            class="block px-4 py-2 w-full text-left hover:bg-intermediate"
+                            x-text="option.label"
+                            @click="params[f.model]=option.value;">
+                          </button>
+                        </li>
+                      </template>
+                    </ul>
+                  </div>
+                </div>
+              </template>
+            </div>
+
+            <template x-if="adapter.negative_prompt">
+              <div class="p-4">
+                <label for="negative_prompt">
+                  {{ p__('label', 'Negative prompt') }}
+                </label>
+
+                <input type="text" id="negative_prompt" class="mt-2 input"
+                  autocomplete="off"
+                  placeholder="{{ __('Type negative prompt here') }}"
+                  x-model="negativePrompt" />
+              </div>
+            </template>
+          </div>
+        </template>
+
+        <div class="flex gap-2 items-end p-2 pl-4 rounded-lg bg-main">
+          <div
+            class="overflow-y-auto mb-2 max-h-36 autogrow-textarea text-content grow"
+            :data-replicated-value="prompt">
+            <textarea
+              :placeholder="placeholder || `{{ __('Type a prompt here...') }}`"
+              autocomplete="off" rows="1" x-model="prompt" x-ref="prompt"
+              :maxlength="adapter.prompt_length" @blur="blur"
+              @focus="placeholderSurprise"
+              class="block p-0 text-base bg-transparent border-none focus:ring-0 placeholder:text-content-dimmed"
+              @keydown.enter.prevent @keydown.tab="tab($event)"
+              required></textarea>
+          </div>
+
+          <div class="flex gap-2 items-center ml-auto">
+            <button type="button"
+              class="relative p-0 w-10 h-10 button button-outline"
+              @click.stop="showSettings = !showSettings" :class="{
+                'bg-line-dimmed': showSettings,
+                'border-transparent': JSON.stringify(original) === JSON.stringify(params)
+              }">
+              <i class="ti ti-settings"></i>
+
+              <template
+                x-if="JSON.stringify(original) != JSON.stringify(params)">
+                <i
+                  class="absolute bottom-full left-full text-2xl -translate-x-1/2 translate-y-1/2 ti ti-point-filled text-accent"></i>
+              </template>
+            </button>
+
+            {% if workspace.subscription.plan.config.imagine.is_enabled is defined and workspace.subscription.plan.config.imagine.is_enabled %}
+            <template x-if="adapter.is_enabled">
+              <button type="submit" class="p-0 w-10 h-10 button button-accent"
+                :disabled="!prompt || isProcessing" :processing="isProcessing">
+                {% include "/snippets/spinner.twig" %}
+
+                <template x-if="!isProcessing">
+                  <i class="ti ti-arrow-up"></i>
+                </template>
+              </button>
+            </template>
+
+            <template x-if="!adapter.is_enabled">
+              <a href="app/billing" class="p-0 w-10 h-10 button button-dimmed"
+                x-tooltip.raw="{{ __('Selected model is not available in your plan. Either upgrade your plan or select another model.') }}">
+                <i class="ti ti-lock-up"></i>
+              </a>
+            </template>
+            {% else %}
+            <a href="app/billing" class="p-0 w-10 h-10 button button-dimmed"
+              x-tooltip.raw="{{ __('Upgrade your plan') }}">
+              <i class="ti ti-lock-up"></i>
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </form>
+
+    {% include "/sections/footer.twig" %}
+  </div>
+</div>
+{% endblock %}

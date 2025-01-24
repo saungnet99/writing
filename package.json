@@ -1,0 +1,56 @@
+{
+  "name": "aikeedo",
+  "version": "2.x",
+  "description": "AIKEEDO - AI Generator",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git"
+  },
+  "author": "",
+  "license": "SEE LICENSE IN <LICENSE>",
+  "devDependencies": {
+    "@babel/core": "^7.22.8",
+    "@babel/preset-env": "^7.22.7",
+    "@rollup/plugin-babel": "^6.0.3",
+    "@rollup/plugin-commonjs": "^25.0.2",
+    "@rollup/plugin-node-resolve": "^15.1.0",
+    "@rollup/plugin-replace": "^5.0.5",
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tailwindcss/container-queries": "^0.1.1",
+    "@tailwindcss/forms": "^0.5.3",
+    "@tailwindcss/typography": "^0.5.9",
+    "autoprefixer": "^10.4.14",
+    "postcss-import": "^15.1.0",
+    "postcss-nested": "^6.0.1",
+    "rollup": "^3.29.5",
+    "tailwindcss": "^3.4.1",
+    "vite": "^5.4.7",
+    "vite-plugin-full-reload": "^1.2.0"
+  },
+  "dependencies": {
+    "@alpinejs/mask": "^3.12.3",
+    "@ryangjchandler/alpine-tooltip": "^2.0.0",
+    "alpinejs": "^3.12.3",
+    "apexcharts": "^3.49.0",
+    "card-validator": "^9.1.0",
+    "eventsource-parser": "^1.1.2",
+    "fast-blurhash": "^1.1.2",
+    "filesize": "^10.1.0",
+    "highlight.js": "^11.8.0",
+    "jwt-decode": "^3.1.2",
+    "katex": "^0.16.11",
+    "remarkable": "^2.0.1",
+    "restricted-input": "^4.0.0",
+    "wavesurfer.js": "^7.7.8"
+  }
+}

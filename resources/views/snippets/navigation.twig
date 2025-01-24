@@ -1,0 +1,337 @@
+{% set active_menu = active_menu ?? null %}
+
+<nav class="flex flex-col gap-6 overflow-x-hidden overflow-y-auto group-data-[collapsed]/html:overflow-visible px-4">
+	{% set cls = 'flex items-center gap-2 p-2 rounded-lg transition hover:bg-intermediate lg:hover:bg-main hover:text-intermediate-content lg:hover:text-content lg:dark:hover:bg-[#040505]' %}
+	{% set active = 'bg-main no-underline text-content dark:bg-[#040505]' %}
+
+	{% if view_namespace == 'admin' %}
+		<ul class="flex flex-col gap-0.5">
+			<li>
+				<a href="admin" class="{{ cls }} {{ active_menu == 'dashboard' ? active : '' }}">
+					<i class="ti ti-home"></i>
+
+					{{ p__('button', 'Dashboard') }}
+				</a>
+			</li>
+
+			<li>
+				<a href="admin/analytics" class="{{ cls }} {{ active_menu == 'analytics' ? active : '' }}">
+					<i class="ti ti-graph"></i>
+
+					{{ p__('button', 'Analytics') }}
+				</a>
+			</li>
+
+			<li>
+				<a href="admin/categories" class="{{ cls }} {{ active_menu == 'categories' ? active : '' }}">
+					<i class="ti ti-category"></i>
+
+					{{ p__('button', 'Categories') }}
+				</a>
+			</li>
+		</ul>
+
+		<div>
+			<h4 class="p-2 font-bold">{{ p__('heading', 'AI') }}</h4>
+
+			<ul class="flex flex-col gap-0.5">
+				<li>
+					<a href="admin/templates" class="{{ cls }} {{ active_menu == 'templates' ? active : '' }}">
+						<i class="ti ti-stack"></i>
+
+						{{ p__('button', 'Templates') }}
+					</a>
+				</li>
+
+				<li>
+					<a href="admin/assistants" class="{{ cls }} {{ active_menu == 'assistants' ? active : '' }}">
+						<i class="ti ti-message-bolt"></i>
+
+						{{ p__('button', 'Assistants') }}
+					</a>
+				</li>
+
+				<li>
+					<a href="admin/voices" class="{{ cls }} {{ active_menu == 'voices' ? active : '' }}">
+						<i class="ti ti-microphone"></i>
+
+						{{ p__('button', 'Voices') }}
+					</a>
+				</li>
+			</ul>
+		</div>
+
+		<div>
+			<h4 class="p-2 font-bold">{{ p__('heading', 'Billing') }}</h4>
+
+			<ul class="flex flex-col gap-0.5">
+				<li>
+					<a href="admin/plans" class="{{ cls }} {{ active_menu == 'plans' ? active : '' }}">
+						<i class="ti ti-box"></i>
+
+						{{ p__('button', 'Plans') }}
+					</a>
+				</li>
+
+				<li>
+					<a href="admin/orders" class="{{ cls }} {{ active_menu == 'orders' ? active : '' }}">
+						<i class="ti ti-coins"></i>
+
+						{{ p__('button', 'Orders') }}
+					</a>
+				</li>
+
+				<li>
+					<a href="admin/subscriptions" class="{{ cls }} {{ active_menu == 'subscriptions' ? active : '' }}">
+						<i class="ti ti-refresh"></i>
+
+						{{ p__('button', 'Subscriptions') }}
+					</a>
+				</li>
+
+				<li>
+					<a href="admin/coupons" class="{{ cls }} {{ active_menu == 'coupons' ? active : '' }}">
+						<i class="ti ti-rosette-discount"></i>
+
+						{{ p__('button', 'Coupons') }}
+					</a>
+				</li>
+			</ul>
+		</div>
+
+		<div>
+			<h4 class="p-2 font-bold">{{ p__('heading', 'Affiliates') }}</h4>
+
+			<ul class="flex flex-col gap-0.5">
+				<li>
+					<a href="admin/payouts" class="{{ cls }} {{ active_menu == 'payouts' ? active : '' }}">
+						<i class="ti ti-credit-card"></i>
+
+						{{ p__('button', 'Payouts') }}
+					</a>
+				</li>
+			</ul>
+		</div>
+
+		<div>
+			<h4 class="p-2 font-bold">{{ p__('heading', 'Accounts') }}</h4>
+
+			<ul class="flex flex-col gap-0.5">
+				<li>
+					<a href="admin/users" class="{{ cls }} {{ active_menu == 'users' ? active : '' }}">
+						<i class="ti ti-users"></i>
+
+						{{ p__('button', 'Users') }}
+					</a>
+				</li>
+
+				<li>
+					<a href="admin/workspaces" class="{{ cls }} {{ active_menu == 'workspaces' ? active : '' }}">
+						<i class="ti ti-building"></i>
+
+						{{ p__('button', 'Workspaces') }}
+					</a>
+				</li>
+			</ul>
+		</div>
+
+		<div>
+			<h4 class="p-2 font-bold">{{ p__('heading', 'Platform') }}</h4>
+
+			<ul class="flex flex-col gap-0.5">
+				<li>
+					<a href="admin/plugins" class="{{ cls }} {{ active_menu == 'plugins' ? active : '' }}">
+						<i class="ti ti-puzzle"></i>
+
+						{{ p__('button', 'Plugins') }}
+					</a>
+				</li>
+
+				<li>
+					<a href="admin/themes" class="{{ cls }} {{ active_menu == 'themes' ? active : '' }}">
+						<i class="ti ti-palette"></i>
+
+						{{ p__('button', 'Themes') }}
+					</a>
+				</li>
+
+				<li>
+					<a href="admin/settings" class="{{ cls }} {{ active_menu == 'settings' ? active : '' }}">
+						<i class="ti ti-settings"></i>
+
+						{{ p__('button', 'Settings') }}
+					</a>
+				</li>
+
+				<li>
+					<a href="admin/status" class="{{ cls }} {{ active_menu == 'status' ? active : '' }}">
+						<i class="ti ti-broadcast"></i>
+
+						{{ p__('button', 'Status') }}
+					</a>
+				</li>
+
+				<li>
+					<a href="admin/update" class="{{ cls }} {{ active_menu == 'update' ? active : '' }}">
+						<i class="ti ti-refresh"></i>
+
+						{{ p__('button', 'Update') }}
+					</a>
+				</li>
+			</ul>
+		</div>
+
+	{% else %}
+		{% if user.is_email_verified == false and option.site.email_verification_policy is defined and option.site.email_verification_policy == 'strict' %}
+			{% set cls = cls ~ " opacity-50 hover:opacity-100 group grayscale hover:grayscale-0" %}
+			{% set lock %}
+			<i class="hidden ml-auto text-base ti ti-lock group-hover:block" x-tooltip.raw.placement.right="{{ __('Email verification required') }}"></i>
+			{% endset %}
+		{% else %}
+			{% set lock = '' %}
+		{% endif %}
+
+		<ul class="flex flex-col gap-0.5">
+			<li>
+				<a href="app" class="{{ cls }} {{ active_menu == 'dashboard' ? active : '' }}">
+					<i class="ti ti-home"></i>
+
+					{{ p__('button', 'Home') }}
+					{{ lock }}
+				</a>
+			</li>
+
+			<li>
+				<a href="app/library" class="{{ cls }} {{ active_menu == 'library' ? active : '' }}">
+					<i class="ti ti-files"></i>
+
+					{{ p__('button', 'Library') }}
+					{{ lock }}
+				</a>
+			</li>
+		</ul>
+
+		<div>
+			<h4 class="p-2 font-bold">{{ p__('heading', 'Tools') }}</h4>
+
+			<ul class="flex flex-col gap-0.5">
+				{% if option.features.chat.is_enabled is defined and option.features.chat.is_enabled %}
+					<li>
+						<a href="app/assistants" class="{{ cls }} {{ active_menu == 'chat' ? active : '' }}">
+							<div class="flex items-center justify-center w-7 h-7 text-white bg-black rounded-[45%] bg-gradient-to-br from-[#00A6FB] to-[#006ABF] scale-105">
+								{% include "snippets/icons/chat.twig" %}
+							</div>
+
+							{{ p__('button', 'Chat') }}
+							{{ lock }}
+						</a>
+					</li>
+				{% endif %}
+
+				{% if option.features.writer.is_enabled is defined and option.features.writer.is_enabled %}
+					<li>
+						<a href="app/presets" class="{{ cls }} {{ active_menu == 'writer' ? active : '' }}">
+							<div class="flex items-center justify-center w-7 h-7 text-white bg-black rounded-[45%] bg-gradient-to-br from-[#FCBF49] to-[#F77F00] scale-105">
+								{% include "snippets/icons/writer.twig" %}
+							</div>
+
+							{{ p__('button', 'Writer') }}
+							{{ lock }}
+						</a>
+					</li>
+				{% endif %}
+
+				{% if option.features.coder.is_enabled is defined and option.features.coder.is_enabled %}
+					<li>
+						<a href="app/coder" class="{{ cls }} {{ active_menu == 'coder' ? active : '' }}">
+							<div class="flex items-center justify-center w-7 h-7 text-white bg-black rounded-[45%] bg-gradient-to-br from-[#F099C3] to-[#E03339] scale-105">
+								{% include "snippets/icons/coder.twig" %}
+							</div>
+
+							{{ p__('button', 'Coder') }}
+							{{ lock }}
+						</a>
+					</li>
+				{% endif %}
+
+				{% if option.features.imagine.is_enabled is defined and option.features.imagine.is_enabled %}
+					<li>
+						<a href="app/imagine" class="{{ cls }} {{ active_menu == 'imagine' ? active : '' }}">
+							<div class="flex items-center justify-center w-7 h-7 text-white bg-black rounded-[45%] bg-gradient-to-br from-[#E6C0FE] to-[#984CF8] scale-105">
+								{% include "snippets/icons/imagine.twig" %}
+							</div>
+
+							{{ p__('button', 'Imagine') }}
+							{{ lock }}
+						</a>
+					</li>
+				{% endif %}
+
+				{% if option.features.transcriber.is_enabled is defined and option.features.transcriber.is_enabled %}
+					<li>
+						<a href="app/transcriber" class="{{ cls }} {{ active_menu == 'transcriber' ? active : '' }}">
+							<div class="flex items-center justify-center w-7 h-7 text-white bg-black rounded-[45%] bg-gradient-to-br from-[#30C862] to-[#00A6FB] scale-105">
+								{% include "snippets/icons/transcriber.twig" %}
+							</div>
+
+							{{ p__('button', 'Transcriber') }}
+							{{ lock }}
+						</a>
+					</li>
+				{% endif %}
+
+				{% if option.features.voiceover.is_enabled is defined and option.features.voiceover.is_enabled %}
+					<li>
+						<a href="app/voiceover" class="{{ cls }} {{ active_menu == 'voiceover' ? active : '' }}">
+							<div class="flex items-center justify-center w-7 h-7 text-white bg-black rounded-[45%] bg-gradient-to-br from-[#BCE143] to-[#30C862] scale-105">
+								{% include "snippets/icons/voiceover.twig" %}
+							</div>
+
+							{{ p__('button', 'Voiceover') }}
+							{{ lock }}
+						</a>
+					</li>
+				{% endif %}
+
+				{% if option.features.voice_isolator.is_enabled is defined and option.features.voice_isolator.is_enabled %}
+					<li>
+						<a href="app/voice-isolator" class="{{ cls }} {{ active_menu == 'voice-isolator' ? active : '' }}">
+							<div class="flex items-center justify-center w-7 h-7 text-white bg-black rounded-[45%] bg-gradient-to-br from-[#6283FB] to-[#C883F3] scale-105">
+								{% include "snippets/icons/voice-isolator.twig" %}
+							</div>
+
+							{{ p__('button', 'Voice Isolator') }}
+							{{ lock }}
+						</a>
+					</li>
+				{% endif %}
+
+				{% if option.features.classifier.is_enabled is defined and option.features.classifier.is_enabled %}
+					<li>
+						<a href="app/classifier" class="{{ cls }} {{ active_menu == 'classifier' ? active : '' }}">
+							<div class="flex items-center justify-center w-7 h-7 text-white bg-black rounded-[45%] bg-gradient-to-br from-[#E562FB] to-[#F8C06D] scale-105">
+								{% include "snippets/icons/classifier.twig" %}
+							</div>
+
+							{{ p__('button', 'Classifier') }}
+							{{ lock }}
+						</a>
+					</li>
+				{% endif %}
+
+				{% if option.features.composer.is_enabled is defined and option.features.composer.is_enabled %}
+					<li>
+						<a href="app/composer" class="{{ cls }} {{ active_menu == 'composer' ? active : '' }}">
+							<div class="flex items-center justify-center w-7 h-7 text-white bg-black rounded-[45%] bg-gradient-to-br from-[#600989] to-[#CF83F3] scale-105">
+								{% include "snippets/icons/composer.twig" %}
+							</div>
+
+							{{ p__('button', 'Composer') }}
+							{{ lock }}
+						</a>
+					</li>
+				{% endif %}
+			</ul>
+		</div>
+	{% endif %}
+</nav>

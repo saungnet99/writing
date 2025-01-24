@@ -1,0 +1,306 @@
+<form action="app/chat" method="GET" x-data="search"
+  @input.debounce.200="search($event.target.value)" class="relative"
+  @click.outside="showResults = false">
+  <div
+    class="relative p-1 rounded-xl bg-line-dimmed text-content-dimmed focus-within:text-content focus-within:bg-gradient-from focus-within:bg-gradient-to-br focus-within:from-gradient-from focus-within:to-gradient-to">
+
+    <input type="text" name="q"
+      placeholder="{{ __('Search or ask AI directly...') }}" autocomplete="off"
+      class="w-full pl-12 pr-4 border-none rounded-lg h-[52px] bg-main text-content placeholder:text-content-dimmed focus:ring-0 focus:outline-none peer"
+      x-ref="input" @keyup.down="showResults = true">
+
+    <div
+      class="flex absolute left-3 top-1/2 justify-center items-center -mt-4 w-8 h-8 pointer-events-none">
+      <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24'
+        viewBox='0 0 24 24' :class="{'hidden': isProcessing }"
+        class="transition-all">
+        <g id="search_3_line" fill='none' fill-rule='evenodd'>
+          <path
+            d='M24 0v24H0V0h24ZM12.593 23.258l-.011.002-.071.035-.02.004-.014-.004-.071-.035c-.01-.004-.019-.001-.024.005l-.004.01-.017.428.005.02.01.013.104.074.015.004.012-.004.104-.074.012-.016.004-.017-.017-.427c-.002-.01-.009-.017-.017-.018Zm.265-.113-.013.002-.185.093-.01.01-.003.011.018.43.005.012.008.007.201.093c.012.004.023 0 .029-.008l.004-.014-.034-.614c-.003-.012-.01-.02-.02-.022Zm-.715.002a.023.023 0 0 0-.027.006l-.006.014-.034.614c0 .012.007.02.017.024l.015-.002.201-.093.01-.008.004-.011.017-.43-.003-.012-.01-.01-.184-.092Z' />
+          <path fill='currentColor'
+            d='M10.5 4a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM2 10.5a8.5 8.5 0 1 1 15.176 5.262l3.652 3.652a1 1 0 0 1-1.414 1.414l-3.652-3.652A8.5 8.5 0 0 1 2 10.5ZM9.5 7a1 1 0 0 1 1-1 4.5 4.5 0 0 1 4.5 4.5 1 1 0 1 1-2 0A2.5 2.5 0 0 0 10.5 8a1 1 0 0 1-1-1Z' />
+        </g>
+      </svg>
+      <div class="hidden" :class="{'hidden': !isProcessing }">
+        {% include "/snippets/spinner.twig" %}
+      </div>
+    </div>
+
+    {% set kybdcls = 'absolute items-center justify-center gap-1 px-4 text-sm transition-all rounded-lg pointer-events-none h-11 font-primary top-2 right-2' %}
+
+    <kbd
+      class="{{ kybdcls }} font-semibold peer-focus:invisible peer-focus:opacity-0 hidden md:flex">
+      <span>⌘</span>K
+    </kbd>
+
+    <kbd
+      class="{{ kybdcls }} font-semibold invisible opacity-0 peer-focus:peer-placeholder-shown:visible peer-focus:peer-placeholder-shown:opacity-100 hidden md:flex">
+      {{ p__('keyboard', 'ESC') }}
+    </kbd>
+
+    <button type="submit"
+      class="absolute top-2 right-2 gap-1 px-4 h-11 text-sm transition-all font-primary button button-accent peer-placeholder-shown:pointer-events-none peer-placeholder-shown:invisile peer-placeholder-shown:opacity-0">
+      <i class="ti ti-sparkles"></i>
+
+      <span class="hidden md:inline">
+        {{ p__('button', 'Generate') }}
+      </span>
+    </button>
+  </div>
+
+  <template x-if="showResults && results.length > 0">
+    <div
+      class="overflow-y-auto absolute left-0 top-full z-50 mt-2 w-full h-auto max-h-96 shadow-menu bg-main box">
+
+      <div class="flex justify-between items-center">
+        <h2>{{ p__('heading', 'Search results') }}</h2>
+
+        <span class="text-sm text-content-dimmed">
+          {% set count %}
+          <span x-text="results.length"></span>
+          {% endset %}
+          {{ __('%s resuls found', count)|raw }}
+        </span>
+      </div>
+
+      <ul class="flex flex-col gap-1 mt-4">
+        <template x-for="item in results" :key="item.id">
+          <li x-data>
+            <template x-if="item.object == 'preset'">
+              <div
+                class="flex relative justify-between items-center py-3 box hover:border-line">
+                <a :href="`app/writer/${item.id}`"
+                  class="absolute top-0 left-0 w-full h-full cursor-pointer"></a>
+
+                <div class="flex gap-4 items-center">
+                  <div class="avatar"
+                    :style="{backgroundColor: item.color ?? null, color: item.color ? '#ffffff' : null, }">
+
+                    <template
+                      x-if="item.image && item.image.startsWith('<svg')">
+                      <div x-html="item.image"></div>
+                    </template>
+
+                    <template
+                      x-if="item.image && !item.image.startsWith('<svg')">
+                      <i class="ti" :class='`ti-${item.image}`'></i>
+                    </template>
+
+                    <template x-if="!item.image">
+                      <span
+                        x-text="item.title.match(/(\b\S)?/g).join('').slice(0, 2)">
+                      </span>
+                    </template>
+                  </div>
+
+                  <div>
+                    <div class="text-sm font-medium md:text-base"
+                      x-html="item.title">
+                    </div>
+
+                    <div class="mt-0.5 md:hidden">
+                      <span class="badge">{{ __('Template') }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="hidden md:block">
+                  <span class="badge">{{ __('Template') }}</span>
+                </div>
+              </div>
+            </template>
+
+            <template x-if="item.object == 'classification'">
+              <div
+                class="flex relative justify-between items-center py-3 box hover:border-line">
+                <a :href="`app/classifier/${item.id}`"
+                  class="absolute top-0 left-0 w-full h-full cursor-pointer"></a>
+
+                <div class="flex gap-4 items-center">
+                  <x-avatar :title="item.title"></x-avatar>
+
+                  <div>
+                    <div class="text-sm md:text-base"
+                      :class="item.title ? 'font-medium' : 'text-content-dimmed'"
+                      x-html="item.title || `{{ __('Untitled classification') }}`">
+                    </div>
+
+                    <div class="mt-0.5 md:hidden">
+                      <span class="badge">{{ __('Classification') }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="hidden md:block">
+                  <span class="badge">{{ __('Classification') }}</span>
+                </div>
+              </div>
+            </template>
+
+            <template x-if="item.object == 'code_document'">
+              <div
+                class="flex relative justify-between items-center py-3 box hover:border-line">
+                <a :href="`app/coder/${item.id}`"
+                  class="absolute top-0 left-0 w-full h-full cursor-pointer"></a>
+
+                <div class="flex gap-4 items-center">
+                  <x-avatar :title="item.title"></x-avatar>
+
+                  <div>
+                    <div class="text-sm md:text-base"
+                      :class="item.title ? 'font-medium' : 'text-content-dimmed'"
+                      x-html="item.title || `{{ __('Untitled code document') }}`">
+                    </div>
+
+                    <div class="mt-0.5 md:hidden">
+                      <span class="badge">{{ __('Code document') }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="hidden md:block">
+                  <span class="badge">{{ __('Code document') }}</span>
+                </div>
+              </div>
+            </template>
+
+            <template x-if="item.object == 'conversation'">
+              <div
+                class="flex relative justify-between items-center py-3 box hover:border-line">
+                <a :href="`app/chat/${item.id}`"
+                  class="absolute top-0 left-0 w-full h-full cursor-pointer"></a>
+
+                <div class="flex gap-4 items-center">
+                  <x-avatar :title="item.title"></x-avatar>
+
+                  <div>
+                    <div class="text-sm md:text-base"
+                      :class="item.title ? 'font-medium' : 'text-content-dimmed'"
+                      x-html="item.title || `{{ __('Untitled conversation') }}`">
+                    </div>
+
+                    <div class="mt-0.5 md:hidden">
+                      <span class="badge">{{ __('Conversation') }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="hidden md:block">
+                  <span class="badge">{{ __('Conversation') }}</span>
+                </div>
+              </div>
+            </template>
+
+            <template x-if="item.object == 'document'">
+              <div
+                class="flex relative justify-between items-center py-3 box hover:border-line">
+                <a :href="`app/writer/${item.id}`"
+                  class="absolute top-0 left-0 w-full h-full cursor-pointer"></a>
+
+                <div class="flex gap-4 items-center">
+                  <x-avatar :title="item.title"></x-avatar>
+
+                  <div>
+                    <div class="text-sm md:text-base"
+                      :class="item.title ? 'font-medium' : 'text-content-dimmed'"
+                      x-html="item.title || `{{ __('Untitled document') }}`">
+                    </div>
+
+                    <div class="mt-0.5 md:hidden">
+                      <span class="badge">{{ __('Document') }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="hidden md:block">
+                  <span class="badge">{{ __('Document') }}</span>
+                </div>
+              </div>
+            </template>
+
+            <template x-if="item.object == 'isolated_voice'">
+              <div
+                class="flex relative justify-between items-center py-3 box hover:border-line">
+                <a :href="`app/voice-isolator/${item.id}`"
+                  class="absolute top-0 left-0 w-full h-full cursor-pointer"></a>
+
+                <div class="flex gap-4 items-center">
+                  <x-avatar :title="item.title"></x-avatar>
+
+                  <div>
+                    <div class="text-sm md:text-base"
+                      :class="item.title ? 'font-medium' : 'text-content-dimmed'"
+                      x-html="item.title || `{{ __('Untitled isolated voice') }}`">
+                    </div>
+
+                    <div class="mt-0.5 md:hidden">
+                      <span class="badge">{{ __('Isolated voice') }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="hidden md:block">
+                  <span class="badge">{{ __('Isolated voice') }}</span>
+                </div>
+              </div>
+            </template>
+
+            <template x-if="item.object == 'speech'">
+              <div
+                class="flex relative justify-between items-center py-3 box hover:border-line">
+                <a :href="`app/voiceover/${item.id}`"
+                  class="absolute top-0 left-0 w-full h-full cursor-pointer"></a>
+
+                <div class="flex gap-4 items-center">
+                  <x-avatar :title="item.title"></x-avatar>
+
+                  <div>
+                    <div class="text-sm md:text-base"
+                      :class="item.title ? 'font-medium' : 'text-content-dimmed'"
+                      x-html="item.title || `{{ __('Untitled speech') }}`">
+                    </div>
+
+                    <div class="mt-0.5 md:hidden">
+                      <span class="badge">{{ __('Speech') }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="hidden md:block">
+                  <span class="badge">{{ __('Speech') }}</span>
+                </div>
+              </div>
+            </template>
+
+            <template x-if="item.object == 'transcription'">
+              <div
+                class="flex relative justify-between items-center py-3 box hover:border-line">
+                <a :href="`app/transcriber/${item.id}`"
+                  class="absolute top-0 left-0 w-full h-full cursor-pointer"></a>
+
+                <div class="flex gap-4 items-center">
+                  <x-avatar :title="item.title"></x-avatar>
+
+                  <div>
+                    <div class="text-sm md:text-base"
+                      :class="item.title ? 'font-medium' : 'text-content-dimmed'"
+                      x-html="item.title || `{{ __('Untitled transcription') }}`">
+                    </div>
+
+                    <div class="mt-0.5 md:hidden">
+                      <span class="badge">{{ __('Transcription') }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="hidden md:block">
+                  <span class="badge">{{ __('Transcription') }}</span>
+                </div>
+              </div>
+            </template>
+          </li>
+        </template>
+      </ul>
+    </div>
+  </template>
+</form>

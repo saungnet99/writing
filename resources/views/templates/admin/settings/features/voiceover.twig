@@ -1,0 +1,169 @@
+{% extends "/layouts/main.twig" %}
+{% set active_menu = 'settings' %}
+
+{% set xdata = 'settings' %}
+{% block title p__('title', 'Voiceover configuration')|title %}
+
+{% set adapters = [
+  {
+    name: 'OpenAI',
+    tooltip: __('Missing OpenAI API key'),
+    is_available: option.openai.api_secret_key is defined and option.openai.api_secret_key is not empty, 
+    models: [
+      {
+        name: 'TTS·1',
+        value: 'tts-1',
+      },
+    ]
+  },
+  {
+    name: 'ElevenLabs',
+    tooltip: __('Missing ElevenLabs API key'),
+    is_available: option.elevenlabs.api_key is defined and option.elevenlabs.api_key is not empty,
+    models: [
+      {
+        name: 'Multilingual v2',
+        value: 'eleven_multilingual_v2',
+      },
+      {
+        name: 'Turbo v2.5',
+        value: 'eleven_turbo_v2_5',
+      },
+      {
+        name: 'Multilingual v1',
+        value: 'eleven_multilingual_v1',
+      },
+      {
+        name: 'Monolingual v1',
+        value: 'eleven_monolingual_v1',
+      },
+    ]
+  },
+  {
+    name: 'Google',
+    tooltip: __('Missing Google TTS credentials'),
+    is_available: option.gcp.credentials is defined and option.gcp.credentials is not empty,
+    models: [
+      {
+        name:  'Google TTS Standard',
+        value: 'google-tts-standard',
+      },
+      {
+        name:  'Google TTS Studio',
+        value: 'google-tts-studio',
+      },
+      {
+        name:  'Google TTS Premium',
+        value: 'google-tts-premium',
+      },
+    ]
+  },
+  {
+    name: 'Azure',
+    tooltip: __('Missing OpenAI API key'),
+    is_available: option.azure.speech is defined and option.azure.speech is not empty, 
+    models: [
+      {
+        name: 'Azure TTS',
+        value: 'azure-tts',
+      },
+    ]
+  },
+] %}
+
+{% block template %}
+<div>
+  {% include "snippets/back.twig" with {link: 'admin/settings/features', label: 'Features'} %}
+
+  <h1 class="mt-4">{{ p__('heading', 'Voiceover') }}</h1>
+</div>
+
+<x-form>
+  <form class="flex flex-col gap-8" @submit.prevent="submit" x-ref="form">
+    <div class="flex flex-col gap-2">
+      <section class="flex flex-col gap-6 box" data-density="comfortable">
+        <h2 class="col-span-2">{{ p__('heading', 'Configuration') }}</h2>
+
+        <div
+          class="flex items-center justify-between p-3 rounded-lg bg-intermediate">
+          {{ p__('label', 'Status') }}
+
+          <label class="inline-flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" name="features[voiceover][is_enabled]"
+              class="hidden peer"
+              {{ option.features.voiceover.is_enabled is defined and option.features.voiceover.is_enabled ? 'checked' : '' }}>
+
+            <span
+              class="h-6 w-10 rounded-3xl bg-line relative block peer-checked:bg-success transition-all after:h-5 after:w-5 after:top-0.5 after:absolute after:left-0 after:ml-0.5 after:transition-all after:rounded-full after:bg-white peer-checked:after:left-4"></span>
+
+            <span class="text-content-dimmed peer-checked:hidden">
+              {{ p__('input-value', 'Disabled') }}
+            </span>
+
+            <span class="hidden text-success peer-checked:inline">
+              {{ p__('input-value', 'Enabled') }}
+            </span>
+          </label>
+        </div>
+      </section>
+
+      <section class="flex flex-col gap-6 box" data-density="comfortable">
+        <h2>{{ p__('heading', 'Models') }}</h2>
+
+        {% for provider in adapters %}
+        {% if loop.index0 > 0 %}
+        <hr class="col-span-2 my-2">
+        {% endif %}
+
+        <h3>{{ provider.name }}</h3>
+
+        <div class="grid gap-6 md:grid-cols-2">
+          {% for model in provider.models %}
+          <label
+            class="flex items-center gap-4 cursor-pointer box hover:border-line">
+            <div>
+              <div class="flex items-center gap-2 text-sm">
+                {{ model.name }}
+
+                {% if provider.is_available is empty %}
+                <i class="text-base ti ti-alert-square-rounded-filled text-failure"
+                  x-tooltip.raw="{{ provider.tooltip }}"></i>
+                {% endif %}
+              </div>
+
+              <div class="font-normal text-content-dimmed">
+                {{ provider.name }}
+              </div>
+            </div>
+
+            <div class="ml-auto">
+              <input type="checkbox" class="hidden peer"
+                name="features[voiceover][models][]" value="{{ model.value }}"
+                {{ option.features.voiceover.models is not defined or model.value in option.features.voiceover.models ? 'checked' : '' }}>
+
+              <span
+                class="h-6 w-10 rounded-3xl bg-line relative block peer-checked:bg-success transition-all after:h-5 after:w-5 after:top-0.5 after:absolute after:left-0 after:ml-0.5 after:transition-all after:rounded-full after:bg-white peer-checked:after:left-4"></span>
+            </div>
+          </label>
+          {% endfor %}
+
+        </div>
+        {% endfor %}
+      </section>
+    </div>
+
+    <div class="flex justify-end gap-4">
+      <a href="admin/settings" class="button button-outline">
+        {{ p__('button', 'Cancel') }}
+      </a>
+
+      <button class="button button-accent" type="submit"
+        :processing="isProcessing">
+        {% include "/snippets/spinner.twig" %}
+
+        {{ p__('button', 'Save changes') }}
+      </button>
+    </div>
+  </form>
+</x-form>
+{% endblock %}

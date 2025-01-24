@@ -1,0 +1,72 @@
+{% extends "/layouts/main.twig" %}
+{% set active_menu = 'settings' %}
+
+{% set xdata = 'settings' %}
+{% block title p__('title', 'Writer configuration')|title %}
+
+{% block template %}
+<div>
+  {% include "snippets/back.twig" with {link: 'admin/settings/features', label: 'Features'} %}
+
+  <h1 class="mt-4">{{ p__('heading', 'Writer') }}</h1>
+</div>
+
+<x-form>
+  <form class="flex flex-col gap-8" @submit.prevent="submit" x-ref="form">
+    <div class="flex flex-col gap-2">
+      <section class="flex flex-col gap-6 box" data-density="comfortable">
+        <h2 class="col-span-2">{{ p__('heading', 'Configuration') }}</h2>
+
+        <div
+          class="flex items-center justify-between p-3 rounded-lg bg-intermediate">
+          {{ p__('label', 'Status') }}
+
+          <label class="inline-flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" name="features[writer][is_enabled]"
+              class="hidden peer"
+              {{ option.features.writer.is_enabled is defined and option.features.writer.is_enabled ? 'checked' : '' }}>
+
+            <span
+              class="h-6 w-10 rounded-3xl bg-line relative block peer-checked:bg-success transition-all after:h-5 after:w-5 after:top-0.5 after:absolute after:left-0 after:ml-0.5 after:transition-all after:rounded-full after:bg-white peer-checked:after:left-4"></span>
+
+            <span class="text-content-dimmed peer-checked:hidden">
+              {{ p__('input-value', 'Disabled') }}
+            </span>
+
+            <span class="hidden text-success peer-checked:inline">
+              {{ p__('input-value', 'Enabled') }}
+            </span>
+          </label>
+        </div>
+
+        <div>
+          <label>{{ p__('label', 'Default language') }}</label>
+
+          <select name="features[writer][default_language]" class="mt-2 input">
+            {% set languages = ["Albanian (Shqip)", "Arabic (العربية)", "Armenian (Հայերեն)", "Awadhi (अवधी)", "Azerbaijani (Azərbaycanca)", "Bashkir (Башҡорт)", "Basque (Euskara)", "Belarusian (Беларуская)", "Bengali (বাংলা)", "Bhojpuri (भोजपुरी)", "Bosnian (Bosanski)", "Brazilian Portugu (português brasileiro)", "Bulgarian (български)", "Cantonese (Yue) (粵語)", "Catalan (Català)", "Chhattisgarhi (छत्तीसगढ़ी)", "Chinese (中文)", "Croatian (Hrvatski)", "Czech (Čeština)", "Danish (Dansk)", "Dogri (डोगरी)", "Dutch (Nederlands)", "English", "Estonian (Eesti)", "Faroese (Føroyskt)", "Finnish (Suomi)", "French (Français)", "Galician (Galego)", "Georgian (ქართული)", "German (Deutsch)", "Greek (Ελληνικά)", "Gujarati (ગુજરાતી)", "Haryanvi (हरियाणवी)", "Hindi (हिंदी)", "Hungarian (Magyar)", "Indonesian (Bahasa Indonesia)", "Irish (Gaeilge)", "Italian (Italiano)", "Japanese (日本語)", "Javanese (Basa Jawa)", "Kannada (ಕನ್ನಡ)", "Kashmiri (कश्मीरी)", "Kazakh (Қазақша)", "Konkani (कोंकणी)", "Korean (한국어)", "Kyrgyz (Кыргызча)", "Latvian (Latviešu)", "Lithuanian (Lietuvių)", "Macedonian (Македонски)", "Maithili (मैथिली)", "Malay (Bahasa Melayu)", "Maltese (Malti)", "Mandarin (普通话)", "Mandarin Chinese (中文)", "Marathi (मराठी)", "Marwari (मारवाड़ी)", "Min Nan (閩南語)", "Moldovan (Moldovenească)", "Mongolian (Монгол)", "Montenegrin (Crnogorski)", "Nepali (नेपाली)", "Norwegian (Norsk)", "Oriya (ଓଡ଼ିଆ)", "Pashto (پښتو)", "Persian (Farsi) (فارسی)", "Polish (Polski)", "Portuguese (Português)", "Punjabi (ਪੰਜਾਬੀ)", "Rajasthani (राजस्थानी)", "Romanian (Română)", "Russian (Русский)", "Sanskrit (संस्कृतम्)", "Santali (संताली)", "Serbian (Српски)", "Sindhi (سنڌي)", "Sinhala (සිංහල)", "Slovak (Slovenčina)", "Slovene (Slovenščina)", "Slovenian (Slovenščina)", "Spanish (Español)", "Turkish (Türkçe)", "Ukrainian (Українська)", "Urdu (اردو)", "Uzbek (Ўзбек)", "Vietnamese (Việt Nam)", "Welsh (Cymraeg)", "Wu (吴语)" ] %}
+            {% for language in languages %}
+            <option value="{{ language }}"
+              {{ option.features.writer.default_language|default('English') == language ? 'selected' : '' }}>
+              {{ language }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+      </section>
+    </div>
+
+    <div class="flex justify-end gap-4">
+      <a href="admin/settings" class="button button-outline">
+        {{ p__('button', 'Cancel') }}
+      </a>
+
+      <button class="button button-accent" type="submit"
+        :processing="isProcessing">
+        {% include "/snippets/spinner.twig" %}
+
+        {{ p__('button', 'Save changes') }}
+      </button>
+    </div>
+  </form>
+</x-form>
+{% endblock %}

@@ -1,0 +1,70 @@
+<template x-if="documentsFetched && documents.length > 0">
+  <div>
+    <div class="flex gap-2 items-center">
+      <h2>
+        {{ p__('heading', 'Recent documents') }}
+      </h2>
+
+      <a href="app/library/documents" class="hidden badge md:flex">
+        {{ p__('button', 'See all documents') }}
+      </a>
+    </div>
+
+    <ul class="flex flex-col gap-1 mt-4 text-sm">
+      <template x-for="doc in documents" :key="doc.id">
+        <li
+          class="flex relative gap-3 justify-between items-center p-3 md:grid md:grid-cols-12 box hover:border-line"
+          x-data>
+
+          <a :href="`app/writer/${doc.id}`"
+            class="absolute top-0 left-0 w-full h-full cursor-pointer"></a>
+
+          <div class="flex gap-3 items-center md:col-span-11">
+            <x-avatar :title="doc.title" :icon="doc.preset?.image"
+              :style="{backgroundColor: doc.preset ? doc.preset.color : null, color: doc.preset ? '#fff' : null}">
+            </x-avatar>
+
+            <div>
+              <div x-html="doc.title" class="line-clamp-1">
+              </div>
+
+              <div class="mt-1 text-xs text-content-dimmed">
+                <x-time :datetime="doc.created_at" data-type="date"></x-time>
+              </div>
+            </div>
+          </div>
+
+          <div class="justify-self-end md:col-span-1">
+            <div class="relative"
+              @click.outside="$refs.context.removeAttribute('data-open')">
+
+              <button @click="$refs.context.toggleAttribute('data-open')">
+                <i
+                  class="ti ti-dots-vertical text-content-dimmed hover:text-intermediate-content"></i>
+              </button>
+
+              <div class="z-10 menu" x-ref="context">
+                <ul>
+                  <li>
+                    <a :href="`app/writer/${doc.id}`"
+                      class="flex gap-2 items-center px-4 py-2 hover:no-underline hover:bg-intermediate">
+                      <i class="ti ti-pencil"></i>
+                      {{ p__('button', 'Edit') }}
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </li>
+      </template>
+    </ul>
+
+    <div class="mt-6 text-center md:hidden">
+      <a href="app/library/documents"
+        class="text-xs font-bold text-right uppercase hover:underline">
+        {{ p__('button', 'See all documents') }}
+      </a>
+    </div>
+  </div>
+</template>

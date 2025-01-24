@@ -1,0 +1,247 @@
+<div>
+  <h2>{{ p__('heading', 'Tools') }}</h2>
+
+  <div class="grid gap-1 mt-4 xs:grid-cols-2 md:grid-cols-3">
+    {% if option.features.chat.is_enabled is defined and option.features.chat.is_enabled %}
+    <div
+      class="flex relative flex-col gap-4 justify-start box hover:border-line">
+      <div
+        class="flex items-center justify-center w-10 h-10 text-white bg-black rounded-[45%] bg-gradient-to-br from-[#00A6FB] to-[#006ABF]">
+        {% include "snippets/icons/chat.twig" %}
+      </div>
+
+      <div>
+        <h3 class="font-bold">{{ p__('heading', 'Chat') }}</h3>
+        <p class="text-sm text-content-dimmed mt-1 min-h-[3.75rem]">
+          {{ p__('chat-tool-description', 'Chat with AI assistants') }}
+        </p>
+      </div>
+
+      <div class="mt-auto">
+        <span
+          class="px-2 py-1 text-xs bg-transparent rounded-lg border border-line text-content">
+          {{ __('AI bot') }}
+        </span>
+      </div>
+
+      <a href="app/assistants"
+        class="absolute top-0 left-0 z-10 w-full h-full"></a>
+    </div>
+    {% endif %}
+
+    {% if option.features.writer.is_enabled is defined and option.features.writer.is_enabled %}
+    <div
+      class="flex relative flex-col gap-4 justify-start box hover:border-line">
+      <div
+        class="flex items-center justify-center w-10 h-10 text-white bg-black rounded-[45%] bg-gradient-to-br from-[#FCBF49] to-[#F77F00]">
+        {% include "snippets/icons/writer.twig" %}
+      </div>
+
+      <div>
+        <h3 class="font-bold">{{ p__('heading', 'Writer') }}</h3>
+        <p class="text-sm text-content-dimmed mt-1 min-h-[3.75rem]">
+          {{ p__('writer-tool-description', 'Write SEO optimized blogs, sales emails and more...') }}
+        </p>
+      </div>
+
+      <div class="mt-auto">
+        <span
+          class="px-2 py-1 text-xs bg-transparent rounded-lg border border-line text-content">
+          {{ __('Text generator') }}
+        </span>
+      </div>
+
+      <a href="app/presets"
+        class="absolute top-0 left-0 z-10 w-full h-full"></a>
+    </div>
+    {% endif %}
+
+    {% if option.features.coder.is_enabled is defined and option.features.coder.is_enabled %}
+    <div
+      class="flex relative flex-col gap-4 justify-start box hover:border-line">
+      <div
+        class="flex items-center justify-center w-10 h-10 text-white bg-black rounded-[45%] bg-gradient-to-br from-[#F099C3] to-[#E03339]">
+        {% include "snippets/icons/coder.twig" %}
+      </div>
+
+      <div>
+        <h3 class="font-bold">{{ p__('heading', 'Coder') }}</h3>
+        <p class="text-sm text-content-dimmed mt-1 min-h-[3.75rem]">
+          {{ p__('coder-tool-description', 'Ready to write code at the speed of light?') }}
+        </p>
+      </div>
+
+      <div class="mt-auto">
+        <span
+          class="px-2 py-1 text-xs bg-transparent rounded-lg border border-line text-content">
+          {{ __('Code writer') }}
+        </span>
+      </div>
+
+      <a href="app/coder" class="absolute top-0 left-0 z-10 w-full h-full"></a>
+    </div>
+    {% endif %}
+
+    {% if option.features.imagine.is_enabled is defined and option.features.imagine.is_enabled %}
+    <div
+      class="flex relative flex-col gap-4 justify-start box hover:border-line">
+      <div
+        class="flex items-center justify-center w-10 h-10 text-white bg-black rounded-[45%] bg-gradient-to-br from-[#E6C0FE] to-[#984CF8]">
+        {% include "snippets/icons/imagine.twig" %}
+      </div>
+
+      <div>
+        <h3 class="font-bold">{{ p__('heading', 'Imagine') }}</h3>
+        <p class="text-sm text-content-dimmed mt-1 min-h-[3.75rem]">
+          {{ p__('imagine-tool-description', 'Visualize what you dream of. Create images from text.') }}
+        </p>
+      </div>
+
+      <div class="mt-auto">
+        <span
+          class="px-2 py-1 text-xs bg-transparent rounded-lg border border-line text-content">
+          {{ __('Image generator') }}
+        </span>
+      </div>
+
+      <a href="app/imagine"
+        class="absolute top-0 left-0 z-10 w-full h-full"></a>
+    </div>
+    {% endif %}
+
+    {% if option.features.transcriber.is_enabled is defined and option.features.transcriber.is_enabled %}
+    <div
+      class="flex relative flex-col gap-4 justify-start box hover:border-line">
+      <div
+        class="flex items-center justify-center w-10 h-10 text-white bg-black rounded-[45%] bg-gradient-to-br from-[#30C862] to-[#00A6FB]">
+        {% include "snippets/icons/transcriber.twig" %}
+      </div>
+
+      <div>
+        <h3 class="font-bold">{{ p__('heading', 'Transcriber') }}</h3>
+        <p class="text-sm text-content-dimmed mt-1 min-h-[3.75rem]">
+          {{ p__('transcriber-tool-description', 'Instantly transcribe spoken words into text.')  }}
+        </p>
+      </div>
+
+      <div class="mt-auto">
+        <span
+          class="px-2 py-1 text-xs bg-transparent rounded-lg border border-line text-content">
+          {{ __('Speech to text') }}
+        </span>
+      </div>
+
+      <a href="app/transcriber"
+        class="absolute top-0 left-0 z-10 w-full h-full"></a>
+    </div>
+    {% endif %}
+
+    {% if option.features.voiceover.is_enabled is defined and option.features.voiceover.is_enabled %}
+    <div
+      class="flex relative flex-col gap-4 justify-start box hover:border-line">
+      <div
+        class="flex items-center justify-center w-10 h-10 text-white bg-black rounded-[45%] bg-gradient-to-br from-[#BCE143] to-[#30C862]">
+        {% include "snippets/icons/voiceover.twig" %}
+      </div>
+
+      <div>
+        <h3 class="font-bold">{{ p__('heading', 'Voiceover') }}</h3>
+        <p class="text-sm text-content-dimmed mt-1 min-h-[3.75rem]">
+          {{ p__('voiceover-tool-description', 'Convert your texts into lifelike speech') }}
+        </p>
+      </div>
+
+      <div class="mt-auto">
+        <span
+          class="px-2 py-1 text-xs bg-transparent rounded-lg border border-line text-content">
+          {{ __('Text to speech') }}
+        </span>
+      </div>
+
+      <a href="app/voiceover"
+        class="absolute top-0 left-0 z-10 w-full h-full"></a>
+    </div>
+    {% endif %}
+
+    {% if option.features.voice_isolator.is_enabled is defined and option.features.voice_isolator.is_enabled %}
+    <div
+      class="flex relative flex-col gap-4 justify-start box hover:border-line">
+      <div
+        class="flex items-center justify-center w-10 h-10 text-white bg-black rounded-[45%] bg-gradient-to-br from-[#6283FB] to-[#C883F3]">
+        {% include "snippets/icons/voice-isolator.twig" %}
+      </div>
+
+      <div>
+        <h3 class="font-bold">{{ p__('heading', 'Voice isolator') }}</h3>
+        <p class="text-sm text-content-dimmed mt-1 min-h-[3.75rem]">
+          {{ p__('voice-isolator-tool-description', 'Isolate voice from background noise.')  }}
+        </p>
+      </div>
+
+      <div class="mt-auto">
+        <span
+          class="px-2 py-1 text-xs bg-transparent rounded-lg border border-line text-content">
+          {{ __('Noise remover') }}
+        </span>
+      </div>
+
+      <a href="app/voice-isolator"
+        class="absolute top-0 left-0 z-10 w-full h-full"></a>
+    </div>
+    {% endif %}
+
+    {% if option.features.classifier.is_enabled is defined and option.features.classifier.is_enabled %}
+    <div
+      class="flex relative flex-col gap-4 justify-start box hover:border-line">
+      <div
+        class="flex items-center justify-center w-10 h-10 text-white bg-black rounded-[45%] bg-gradient-to-br from-[#E562FB] to-[#F8C06D]">
+        {% include "snippets/icons/classifier.twig" %}
+      </div>
+
+      <div>
+        <h3 class="font-bold">{{ p__('heading', 'Classifier') }}</h3>
+        <p class="text-sm text-content-dimmed mt-1 min-h-[3.75rem]">
+          {{ p__('classifier-tool-description', 'Classify content as potentially harmful across several categories.')  }}
+        </p>
+      </div>
+
+      <div class="mt-auto">
+        <span
+          class="px-2 py-1 text-xs bg-transparent rounded-lg border border-line text-content">
+          {{ __('Moderation') }}
+        </span>
+      </div>
+
+      <a href="app/classifier"
+        class="absolute top-0 left-0 z-10 w-full h-full"></a>
+    </div>
+    {% endif %}
+
+    {% if option.features.composer.is_enabled is defined and option.features.composer.is_enabled %}
+    <div
+      class="flex relative flex-col gap-4 justify-start box hover:border-line">
+      <div
+        class="flex items-center justify-center w-10 h-10 text-white bg-black rounded-[45%] bg-gradient-to-br from-[#600989] to-[#CF83F3]">
+        {% include "snippets/icons/composer.twig" %}
+      </div>
+
+      <div>
+        <h3 class="font-bold">{{ p__('heading', 'Composer') }}</h3>
+        <p class="text-sm text-content-dimmed mt-1 min-h-[3.75rem]">
+          {{ p__('composer-tool-description', 'Create music and sounds.')  }}
+        </p>
+      </div>
+
+      <div class="mt-auto">
+        <span
+          class="px-2 py-1 text-xs bg-transparent rounded-lg border border-line text-content">
+          {{ __('Moderation') }}
+        </span>
+      </div>
+
+      <a href="app/composer"
+        class="absolute top-0 left-0 z-10 w-full h-full"></a>
+    </div>
+    {% endif %}
+  </div>
+</div>

@@ -1,0 +1,72 @@
+{% if placeholder is defined %}
+<div class="flex relative flex-col gap-6 box hover:border-line"
+  data-starred="false">
+
+  <div class="flex justify-between items-center avatar">
+    <div class="w-10 h-10 rounded-ful loading">
+    </div>
+  </div>
+
+  <div>
+    <div class="w-16 h-6 loading"></div>
+    <div class="mt-2 h-4 loading"></div>
+    <div class="mt-1 mr-3 h-4 loading"></div>
+    <div class="mt-1 w-1/2 h-4 loading"></div>
+  </div>
+
+  <div class="flex flex-col gap-6 mt-auto">
+    <div class="flex gap-2 items-center">
+      <span class="py-1 w-10 h-5 loading"></span>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="flex relative flex-col gap-6 box hover:border-line">
+  <div class="flex justify-between items-center">
+    <x-avatar icon="box" :src="assistant.avatar" :title="assistant.name">
+    </x-avatar>
+
+    <template
+      x-if="$store.workspace.subscription?.plan.config.assistants != null && !$store.workspace.subscription?.plan.config.assistants.includes(assistant.id)">
+      <a href="app/billing" x-tooltip.raw="{{ __('Upgrade plan') }}"
+        class="relative z-20 text-content-dimmed">
+        <i class="ti ti-lock-up"></i>
+      </a>
+    </template>
+  </div>
+
+  <div>
+    <h3 class="font-bold" x-text="assistant.name"></h3>
+
+    <template x-if="assistant.expertise">
+      <div class="mt-1 text-sm text-content-dimmed"
+        x-text="assistant.expertise">
+      </div>
+    </template>
+  </div>
+
+  <template x-if="assistant.description">
+    <p class="text-sm text-content-dimmed" x-text="assistant.description">
+    </p>
+  </template>
+
+  <div class="hidden mt-auto md:block">
+    <template
+      x-if="$store.workspace.subscription?.plan.config.assistants == null || $store.workspace.subscription?.plan.config.assistants.includes(assistant.id)">
+      <a :href="`app/chat/${assistant.id}`" class="w-full button button-dimmed">
+        {{ p__('button', 'Start conversation') }}
+      </a>
+    </template>
+
+    <template
+      x-if="$store.workspace.subscription?.plan.config.assistants != null && !$store.workspace.subscription?.plan.config.assistants.includes(assistant.id)">
+      <a :href="`app/billing`" class="w-full button button-outline">
+        {{ p__('button', 'Upgrade plan') }}
+      </a>
+    </template>
+  </div>
+
+  <a :href="$store.workspace.subscription?.plan.config.assistants == null || $store.workspace.subscription?.plan.config.assistants.includes(assistant.id) ? `app/chat/${assistant.id}` : `app/billing`"
+    class="absolute top-0 left-0 z-10 w-full h-full md:hidden"></a>
+</div>
+{% endif %}

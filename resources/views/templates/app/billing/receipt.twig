@@ -1,0 +1,162 @@
+{% extends "/layouts/main.twig" %}
+
+{% block title p__('title', 'Order receipt')|title %}
+
+{% block template %}
+<div>
+  {% include "snippets/back.twig" with {
+    link: 'app/billing', 
+    label: p__('button', 'Billing overview')
+  } %}
+  <h1 class="mt-4">{{ p__('heading', 'Order receipt') }}</h1>
+
+  <p class="mt-2 text-content-dimmed">
+    <x-uuid>{{ order.id }}</x-uuid>
+  </p>
+</div>
+
+<div class="flex flex-col gap-10 md:flex-row">
+  <div class="flex flex-col gap-4 p-8 md:w-96 shrink-0 box">
+    <h2>
+      {{ order.plan.billing_cycle == 'one-time' ? p__('text', 'Credit add-on') : p__('text', 'Subscription') }}
+    </h2>
+
+    <div class="flex justify-between mt-2">
+      <div>
+        <h3 class="text-xl">{{ order.plan.title }}</h3>
+
+        <div class="text-sm text-content-dimmed">
+          <x-credit data-value="{{ order.plan.credit_count }}"
+            format="{{ order.plan.credit_count is same as null ? __('Unlimited credits') : n__(":count credit", ":count credits", order.plan.credit_count, order.plan.credit_count) }}"></x-credit>
+        </div>
+      </div>
+
+      <div class="text-right">
+        <div class="text-xl font-bold">
+          <x-money data-value="{{ order.plan.price }}"
+            currency="{{ order.currency.code }}"
+            minor-units="{{ order.currency.fraction_digits }}"
+            fraction="auto"></x-money>
+        </div>
+
+        <div class="text-sm text-content-dimmed">
+          {% if order.plan.billing_cycle == 'monthly' %}
+          {{ p__('billing-cycle', 'Per month') }}
+          {% elseif order.plan.billing_cycle == 'yearly' %}
+          {{ p__('billing-cycle', 'Per year') }}
+          {% else %}
+          {{ p__('billing-cycle', 'One time') }}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div>
+      <div class="flex justify-between">
+        <div>{{ __('Subtotal') }}</div>
+        <div>
+          <x-money data-value="{{ order.subtotal }}"
+            currency="{{ order.currency.code }}"
+            minor-units="{{ order.currency.fraction_digits }}"
+            fraction="auto"></x-money>
+        </div>
+      </div>
+
+      <div class="flex justify-between">
+        <div>
+          {{ __('Discount') }}
+
+          {% if order.plan.billing_cycle in ['monthly', 'yearly'] and order.coupon.cycle_count is defined and order.coupon.cycle_count != null %}
+            <span class="text-xs text-content-dimmed">
+              {% if order.coupon.cycle_count == 1 %}
+                ({{ __('For first payment only') }})
+              {% else %}
+                ({{ __('For first :count payments only')|replace({':count': order.coupon.cycle_count}) }})
+              {% endif %}
+            </span>
+          {% endif %}
+        </div>
+        <div>
+        {% if order.coupon %}
+          {% if order.coupon.discount_type == 'fixed' %}
+            <x-money data-value="{{ order.coupon.amount }}" 
+              currency="{{ order.currency.code }}"
+              minor-units="{{ order.currency.fraction_digits }}"
+              fraction="auto"></x-money>
+          {% else %}
+            <span>{{ order.coupon.amount / 100 }}%</span>
+          {% endif %}
+        {% else %}
+          <x-money data-value="0" 
+            currency="{{ order.currency.code }}"
+            minor-units="{{ order.currency.fraction_digits }}"
+            fraction="auto"></x-money>
+        {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="flex justify-between text-xl">
+      <div>{{ __('Total') }}</div>
+      <div class="font-bold">
+        <x-money data-value="{{ order.total }}"
+          currency="{{ order.currency.code }}"
+          minor-units="{{ order.currency.fraction_digits }}"
+          fraction="auto"></x-money>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex justify-center items-center p-8 text-center grow box">
+    <div class="flex flex-col gap-6">
+      {% if order.is_fulfilled %}
+      <i class="text-5xl text-success ti ti-square-rounded-check-filled"></i>
+      {% elseif order.is_paid %}
+      <i class="text-5xl text-alert ti ti-alert-square-rounded-filled"></i>
+      {% else %}
+      <i class="text-5xl text-failure ti ti-square-rounded-x-filled"></i>
+      {% endif %}
+
+      <div>
+        {% if order.is_fulfilled %}
+        <h2>{{ p__('heading', 'Purchase completed') }}</h2>
+
+        <p class="mt-1 text-sm">
+          {{ order.is_paid ? __('Order paid and completed successfully!') : __('Order completed successfully!') }}
+        </p>
+        {% elseif order.is_paid %}
+        <h2>{{ p__('heading', 'Attention required') }}</h2>
+
+        <p class="mt-1 text-sm">
+          {{ __('Order paid successfully but failed to complete.') }}
+        </p>
+
+        <p class="mt-4 text-sm text-content-dimmed">
+          {{ __('Please contact support with your order id for assistance.') }}
+        </p>
+        {% else %}
+        <h2>{{ p__('heading', 'Payment failed') }}</h2>
+
+        <p class="mt-1 text-sm">
+          {{ __('Failed to complete the order!') }}
+        </p>
+
+        <p class="mt-4 text-sm text-content-dimmed">
+          {{ __('Please try again or contact support with your order id for assistance.') }}
+        </p>
+        {% endif %}
+      </div>
+
+      <div>
+        <a href="app/billing" class="button button-outline button-sm">
+          {{ p__('button', 'Billing overview') }}
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

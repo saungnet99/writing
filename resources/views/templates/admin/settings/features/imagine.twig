@@ -1,0 +1,203 @@
+{% extends "/layouts/main.twig" %}
+{% set active_menu = 'settings' %}
+
+{% set xdata = 'settings' %}
+{% block title p__('title', 'Imagine configuration')|title %}
+
+{% set adapters = [
+  {
+    name: 'OpenAI',
+    tooltip: __('Missing OpenAI API key'),
+    is_available: option.openai.api_secret_key is defined and option.openai.api_secret_key is not empty, 
+    models: [
+      {
+        name: 'DALL·E 3',
+        value: 'dall-e-3',
+      },
+      {
+        name: 'DALL·E 2',
+        value: 'dall-e-2',
+      },
+    ]
+  },
+  {
+    name: 'FalAI',
+    tooltip: __('Missing FalAI API key'),
+    is_available: option.falai.api_key is defined and option.falai.api_key is not empty, 
+    models: [
+      {
+        name: 'FLUX.1 [dev]',
+        value: 'flux/dev',
+      },
+      {
+        name: 'FLUX.1 [schnell]',
+        value: 'flux/schnell',
+      },
+      {
+        name: 'FLUX.1 [pro]',
+        value: 'flux-pro',
+      },
+      {
+        name: 'FLUX Realism',
+        value: 'flux-realism',
+      }
+    ]
+  },
+  {
+    name: 'StabilityAI',
+    tooltip: __('Missing StabilityAI API key'),
+    is_available: option.stabilityai.api_key is defined and option.stabilityai.api_key is not empty,
+    models: [
+      {
+        name: 'Stable Diffusion Ultra (SD Ultra)',
+        value: 'sd-ultra',
+      },
+      {
+        name: 'Stable Diffusion Core (SD Core)',
+        value: 'sd-core',
+      },
+      {
+        name: 'Stable Diffusion 3 (SD3 Large)',
+        value: 'sd3-large',
+      },
+      {
+        name: 'Stable Diffusion 3 (SD3 Large Turbo)',
+        value: 'sd3-large-turbo',
+      },
+      {
+        name: 'Stable Diffusion 3 (SD3 Medium)',
+        value: 'sd3-medium',
+      },
+      {
+        name: 'Stable Diffusion XL (SDXL)',
+        value: 'stable-diffusion-xl-1024-v1-0',
+      },
+      {
+        name: 'Stable Diffusion 1.6 (SD 1.6)',
+        value: 'stable-diffusion-v1-6',
+      },
+    ]
+  },
+  {
+    name: 'Clipdrop',
+    tooltip: p__('tooltip', 'Missing Clipdrop API key'),
+    is_available: option.clipdrop.api_key is defined and option.clipdrop.api_key is not empty,
+    models: [
+      {
+        name:  'Clipdrop',
+        value: 'clipdrop',
+      }
+    ]
+  }
+] %}
+
+{% block template %}
+<div>
+  {% include "snippets/back.twig" with {link: 'admin/settings/features', label: 'Features'} %}
+
+  <h1 class="mt-4">{{ p__('heading', 'Imagine') }}</h1>
+</div>
+
+<x-form>
+  <form class="flex flex-col gap-8" @submit.prevent="submit" x-ref="form">
+    <div class="flex flex-col gap-2">
+      <section class="flex flex-col gap-6 box" data-density="comfortable">
+        <h2 class="col-span-2">{{ p__('heading', 'Configuration') }}</h2>
+
+        <div
+          class="flex justify-between items-center p-3 rounded-lg bg-intermediate">
+          {{ p__('label', 'Status') }}
+
+          <label class="inline-flex gap-2 items-center cursor-pointer">
+            <input type="checkbox" name="features[imagine][is_enabled]"
+              class="hidden peer"
+              {{ option.features.imagine.is_enabled is defined and option.features.imagine.is_enabled ? 'checked' : '' }}>
+
+            <span
+              class="block relative w-10 h-6 rounded-3xl transition-all bg-line peer-checked:bg-success after:h-5 after:w-5 after:top-0.5 after:absolute after:left-0 after:ml-0.5 after:transition-all after:rounded-full after:bg-white peer-checked:after:left-4"></span>
+
+            <span class="text-content-dimmed peer-checked:hidden">
+              {{ p__('input-value', 'Disabled') }}
+            </span>
+
+            <span class="hidden text-success peer-checked:inline">
+              {{ p__('input-value', 'Enabled') }}
+            </span>
+          </label>
+        </div>
+
+        <div>
+          <label>{{ p__('label', 'Default model') }}</label>
+
+          <select name="features[imagine][default_model]" class="mt-2 input">
+            {% for provider in adapters %}
+            {% for model in provider.models %}
+            <option value="{{ model.value }}"
+              {{ option.features.imagine.default_model is defined and option.features.imagine.default_model == model.value ? 'selected' : '' }}>
+              {{ model.name }}</option>
+            {% endfor %}
+            {% endfor %}
+          </select>
+        </div>
+      </section>
+
+      <section class="flex flex-col gap-6 box" data-density="comfortable">
+        <h2>{{ p__('heading', 'Models') }}</h2>
+
+        {% for provider in adapters %}
+        {% if loop.index0 > 0 %}
+        <hr class="col-span-2 my-2">
+        {% endif %}
+
+        <h3>{{ provider.name }}</h3>
+
+        <div class="grid gap-6 md:grid-cols-2">
+          {% for model in provider.models %}
+          <label
+            class="flex gap-4 items-center cursor-pointer box hover:border-line">
+            <div>
+              <div class="flex gap-2 items-center text-sm">
+                {{ model.name }}
+
+                {% if provider.is_available is empty %}
+                <i class="text-base ti ti-alert-square-rounded-filled text-failure"
+                  x-tooltip.raw="{{ provider.tooltip }}"></i>
+                {% endif %}
+              </div>
+
+              <div class="font-normal text-content-dimmed">
+                {{ provider.name }}
+              </div>
+            </div>
+
+            <div class="ml-auto">
+              <input type="checkbox" class="hidden peer"
+                name="features[imagine][models][]" value="{{ model.value }}"
+                {{ option.features.imagine.models is not defined or model.value in option.features.imagine.models ? 'checked' : '' }}>
+
+              <span
+                class="block relative w-10 h-6 rounded-3xl transition-all bg-line peer-checked:bg-success after:h-5 after:w-5 after:top-0.5 after:absolute after:left-0 after:ml-0.5 after:transition-all after:rounded-full after:bg-white peer-checked:after:left-4"></span>
+            </div>
+          </label>
+          {% endfor %}
+
+        </div>
+        {% endfor %}
+      </section>
+    </div>
+
+    <div class="flex gap-4 justify-end">
+      <a href="admin/settings" class="button button-outline">
+        {{ p__('button', 'Cancel') }}
+      </a>
+
+      <button class="button button-accent" type="submit"
+        :processing="isProcessing">
+        {% include "/snippets/spinner.twig" %}
+
+        {{ p__('button', 'Save changes') }}
+      </button>
+    </div>
+  </form>
+</x-form>
+{% endblock %}

@@ -1,0 +1,90 @@
+.button {
+  @apply inline-flex items-center justify-center gap-2
+        
+        px-6 h-12 rounded-lg 
+
+        text-button-content 
+        bg-button 
+        
+        text-center 
+        text-base
+        font-semibold 
+
+        transition-colors
+        
+        hover:outline
+        focus:outline
+        outline-1
+        outline-offset-2
+        outline-button
+        whitespace-nowrap;
+
+  &:disabled {
+    @apply bg-line-dimmed
+            text-content;
+  }
+}
+
+button {
+  .spinner {
+    @apply hidden;
+  }
+
+  &[processing] {
+    @apply opacity-50
+            cursor-not-allowed 
+            pointer-events-none;
+  }
+
+  &[processing] .spinner {
+    @apply block;
+  }
+
+  &:disabled {
+    @apply opacity-50 
+              cursor-not-allowed 
+              pointer-events-none;
+  }
+}
+
+/* Styles */
+.button-accent {
+  @apply bg-button-accent text-button-accent-content outline-button-accent;
+}
+
+.button-dimmed {
+  @apply bg-button-dimmed text-button-dimmed-content outline-button-dimmed;
+}
+
+.button-failure {
+  @apply bg-failure outline-failure;
+}
+
+.button-outline {
+  @apply bg-transparent 
+        border 
+        border-line-dimmed 
+        text-content
+        hover:border-line
+        focus:border-line
+        hover:outline-none
+        focus:outline-none;
+}
+
+/* Sizes */
+.button-sm,
+.button-xs {
+  @apply h-9 px-3 text-sm rounded-md;
+
+  & i {
+    @apply text-base;
+  }
+
+  & .spinner {
+    @apply size-3;
+  }
+}
+
+.button-xs {
+  @apply h-6 px-1.5;
+}

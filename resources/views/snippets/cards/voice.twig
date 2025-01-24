@@ -1,0 +1,121 @@
+{% if placeholder is defined %}
+<div class="flex relative flex-col gap-6 box">
+  <div>
+    <h3 class="w-16 h-6 font-bold loading"></h3>
+    <div class="mt-1 w-24 h-4 loading"></div>
+  </div>
+
+  <div class="flex gap-2 items-center">
+    <div class="w-6 h-6 rounded-full shrink-0 loading">
+    </div>
+
+    <div class="w-full h-8 grow-1 loading">
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-6 mt-auto">
+    <div class="flex gap-2 items-center mt-0.5">
+      <span class="py-1 w-12 h-6 loading"></span>
+      <span class="py-1 w-14 h-6 loading"></span>
+    </div>
+
+    <div class="hidden w-full button button-dimmed md:block"></div>
+  </div>
+</div>
+{% else %}
+<div class="flex relative flex-col gap-6 box hover:border-line">
+  <div>
+    <div class="flex gap-2 justify-between items-center">
+      <h3 x-text="voice.name" class="line-clamp-1"></h3>
+
+      <template x-if="voice.supported_languages.length > 0">
+        <div class="relative z-20">
+          <div class="flex items-center group">
+            <template x-for="locale, i in voice.supported_languages">
+              <template x-if="i < 3">
+                <x-avatar
+                  class="border-2 transition-all cursor-pointer border-main hover:border-line avatar-xs"
+                  :class="i > 0 ? '-ml-2 group-hover:ml-0' : null"
+                  x-tooltip="locale.name || locale.code"
+                  :src="`https://flagcdn.com/${locale.country_code.toLowerCase()}.svg`">
+                </x-avatar>
+              </template>
+            </template>
+
+            <template x-if="voice.supported_languages.length > 3">
+              <button type="button"
+                class="ml-1 text-xs text-content-dimmed hover:text-content"
+                @click="currentResource = voice; modal.open('language-modal')"
+                x-tooltip.raw="{{ __('View all') }}">
+                +<span x-text="voice.supported_languages.length - 3"></span>
+              </button>
+            </template>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <div class="text-sm capitalize min-h-5">
+      <template x-if="voice.age">
+        <span x-text="voice.age"></span>
+      </template>
+
+      <template x-if="voice.accent">
+        <span x-text="voice.accent"></span>
+      </template>
+
+      <template x-if="voice.gender">
+        <span x-text="voice.gender"></span>
+      </template>
+    </div>
+  </div>
+
+  <template x-if="voice.sample_url">
+    <x-wave class="flex relative z-20 gap-2 items-center group"
+      :src="voice.sample_url">
+      <button type="button" play-pause>
+        <i
+          class="ti ti-player-play-filled text-content-dimmed hover:text-content group-[[state=loading]]:hidden group-[[state=loaded]]:hidden group-[[state=playing]]:hidden"></i>
+        <i
+          class="ti ti-player-pause-filled hidden group-[[state=playing]]:block"></i>
+      </button>
+
+      <div class="h-8 grow" wave>
+      </div>
+    </x-wave>
+  </template>
+
+  <div class="flex flex-col gap-6 mt-auto">
+    <template
+      x-if="!$store.workspace.subscription?.plan.config.models[voice.model]">
+      <div class="flex gap-2 items-center text-xs text-content-dimmed">
+        <i class="text-base ti ti-lock-up"></i>
+
+        {{ __('Not availabe in your plan') }}
+      </div>
+    </template>
+
+    <div class="hidden mt-auto md:block">
+      <template
+        x-if="!$store.workspace.subscription?.plan.config.models[voice.model]">
+        <a href="app/billing" class="w-full button button-outline">
+          <i class="ti ti-lock-up"></i>
+          {{ p__('button', 'Upgrade plan') }}
+        </a>
+      </template>
+
+      <template
+        x-if="$store.workspace.subscription?.plan.config.models[voice.model]">
+        <a :href="`app/voiceover/${voice.id}`"
+          class="w-full button button-dimmed">
+          {{ p__('button', 'Use this voice') }}
+        </a>
+      </template>
+    </div>
+
+    <a :href="$store.workspace.subscription?.plan.config.models[voice.model] ? `app/voiceover/${voice.id}` : `app/billing`"
+      class="absolute top-0 left-0 z-10 w-full h-full md:hidden"></a>
+
+  </div>
+</div>
+{% endif %}

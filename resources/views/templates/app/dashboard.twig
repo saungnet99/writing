@@ -1,0 +1,51 @@
+{% extends "/layouts/main.twig" %}
+
+{% set active_menu = 'dashboard' %}
+{% set xdata = 'dashboard' %}
+{% block title p__('title', 'Dashboard')|title %}
+
+{% block template %}
+<h1>
+  <span
+    class="block text-sm font-normal text-content-dimmed">{{ p__('heading', 'Welcome') }}</span>
+
+  <span class="block">
+    {{ user.first_name }} {{ user.last_name }}
+  </span>
+</h1>
+
+
+<div class="flex flex-col gap-1">
+  <div class="mb-3">
+    {% include "sections/dashboard/search.twig" %}
+  </div>
+
+  {% if environment == 'demo' and user.role == 'admin'  %}
+  <div
+    class="px-4 py-2 text-xs font-bold rounded-md border-2 border-failure/25 bg-failure/10">
+    Sign up with your email to receive 100 free credits for testing app
+    features. This demo admin account has no credits to use within the app.
+  </div>
+  {% endif %}
+
+  {% if user.is_email_verified != true and option.site.email_verification_policy is defined and option.site.email_verification_policy in ['relaxed', 'strict'] %}
+  <div class="flex gap-2 items-center box">
+    <i class="ti ti-alert-circle-filled text-failure"></i>
+
+    <div>
+      {{ __('Your email address is not verified.') }}
+
+      <a href="app/account/verification" class="font-semibold hover:underline">
+        {{ p__('button', 'Verify email') }}
+      </a>
+    </div>
+  </div>
+  {% endif %}
+
+  {% include "sections/dashboard/billing.twig" %}
+  {% include "sections/dashboard/usage.twig" %}
+</div>
+
+{% include "sections/dashboard/tools.twig" %}
+{% include "sections/dashboard/documents.twig" %}
+{% endblock %}

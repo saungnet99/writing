@@ -1,0 +1,794 @@
+{% extends "/layouts/main.twig" %}
+{% set mobile_head_button = {
+  link: 'app/chat' ~ (assistant is defined ? '/' ~ assistant.id : ''),
+} %}
+
+
+{% set img_types = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'] %}
+{% set types = [] %}
+
+
+{% if workspace.subscription.plan.config.tools.embedding_search is defined and workspace.subscription.plan.config.tools.embedding_search %}
+	{% set types = types|merge([
+  'application/pdf',
+  'text/csv',
+  'application/json',
+  'text/plain',
+  '.doc',
+  '.docx', 
+  '.odt',
+  '.xml',
+  ]) %}
+{% endif %}
+
+{% set capabilities = ['embedding_search', 'google_search', 'web_scrap', 'generate_image', 'cohere_web_search']|filter(
+  cap => option.features.tools[cap].is_enabled is defined 
+  and option.features.tools[cap].is_enabled
+  and workspace.subscription.plan.config.tools[cap] is defined 
+  and workspace.subscription.plan.config.tools[cap]) %}
+
+{% set adapters = [
+  {
+    is_available: option.openai.api_secret_key is defined and option.openai.api_secret_key is not empty,
+    models: [
+      {
+        model: 'o1-preview',
+        short_name: 'O1 Preview',
+        name: 'OpenAI / O1 Preview',
+        supports_image: false,
+        supports_calls: false,
+        file_types: [],
+        is_enabled: workspace.subscription.plan.config.models['o1-preview'] ?? false,
+        is_available: option.features.chat.models is not defined or 'o1-preview' in option.features.chat.models
+      },
+      {
+        model: 'o1-mini',
+        short_name: 'O1 Mini',
+        name: 'OpenAI / O1 Mini',
+        supports_image: false,
+        supports_calls: false,
+        file_types: [],
+        is_enabled: workspace.subscription.plan.config.models['o1-mini'] ?? false,
+        is_available: option.features.chat.models is not defined or 'o1-mini' in option.features.chat.models
+      },
+      {
+        model: 'gpt-4o',
+        short_name: 'GPT·4o',
+        name: 'OpenAI / GPT·4o',
+        supports_image: true,
+        supports_calls: true,
+        file_types: img_types|merge(types),
+        is_enabled: workspace.subscription.plan.config.models['gpt-4o'] ?? false,
+        is_available: option.features.chat.models is not defined or 'gpt-4o' in option.features.chat.models
+      },
+      {
+        model: 'gpt-4o-mini',
+        short_name: 'GPT·4o mini',
+        name: 'OpenAI / GPT·4o mini',
+        supports_image: true,
+        supports_calls: true,
+        file_types: img_types|merge(types),
+        is_enabled: workspace.subscription.plan.config.models['gpt-4o-mini'] ?? false,
+        is_available: option.features.chat.models is not defined or 'gpt-4o-mini' in option.features.chat.models
+      },
+      {
+        model: 'gpt-4-turbo',
+        short_name: 'GPT·4 Turbo',
+        name: 'OpenAI / GPT·4 Turbo',
+        supports_image: true,
+        supports_calls: true,
+        file_types: img_types|merge(types),
+        is_enabled: workspace.subscription.plan.config.models['gpt-4-turbo'] ?? false,
+        is_available: option.features.chat.models is not defined or 'gpt-4-turbo' in option.features.chat.models
+      },
+      {
+        model: 'gpt-4',
+        short_name: 'GPT·4',
+        name: 'OpenAI / GPT·4',
+        supports_image: false,
+        supports_calls: true,
+        file_types: types,
+        is_enabled: workspace.subscription.plan.config.models['gpt-4'] ?? false,
+        is_available: option.features.chat.models is not defined or 'gpt-4' in option.features.chat.models
+      },
+      {
+        model: 'gpt-3.5-turbo',
+        short_name: 'GPT·3.5 Turbo',
+        name: 'OpenAI / GPT·3.5 Turbo',
+        supports_image: false,
+        supports_calls: true,
+        file_types: types,
+        is_enabled: workspace.subscription.plan.config.models['gpt-3.5-turbo'] ?? false,
+        is_available: option.features.chat.models is not defined or 'gpt-3.5-turbo' in option.features.chat.models
+      }
+    ]
+  },
+  {
+    is_available: option.anthropic.api_key is defined and option.anthropic.api_key is not empty,
+    models: [
+      {
+        model: 'claude-3-5-sonnet-latest',
+        short_name: 'Sonnet 3.5',
+        name: 'Anthropic / Claude 3.5 Sonnet',
+        supports_image: true,
+        supports_calls: true,
+        file_types: img_types|merge(types),
+        is_enabled: workspace.subscription.plan.config.models['claude-3-5-sonnet-latest'] ?? false,
+        is_available: option.features.chat.models is not defined or 'claude-3-5-sonnet-latest' in option.features.chat.models
+      },
+      {
+        model: 'claude-3-5-haiku-latest',
+        short_name: 'Haiku 3.5',
+        name: 'Anthropic / Claude 3.5 Haiku',
+        supports_image: true,
+        supports_calls: true,
+        file_types: img_types|merge(types),
+        is_enabled: workspace.subscription.plan.config.models['claude-3-5-haiku-latest'] ?? false,
+        is_available: option.features.chat.models is not defined or 'claude-3-5-haiku-latest' in option.features.chat.models
+      },
+      {
+        model: 'claude-3-sonnet-20240229',
+        short_name: 'Sonnet',
+        name: 'Anthropic / Claude 3 Sonnet',
+        supports_image: true,
+        supports_calls: true,
+        file_types: img_types|merge(types),
+        is_enabled: workspace.subscription.plan.config.models['claude-3-sonnet-20240229'] ?? false,
+        is_available: option.features.chat.models is not defined or 'claude-3-sonnet-20240229' in option.features.chat.models
+      },
+      {
+        model: 'claude-3-haiku-20240307',
+        short_name: 'Haiku',
+        name: 'Anthropic / Claude 3 Haiku',
+        supports_image: true,
+        supports_calls: true,
+        file_types: img_types|merge(types),
+        is_enabled: workspace.subscription.plan.config.models['claude-3-haiku-20240307'] ?? false,
+        is_available: option.features.chat.models is not defined or 'claude-3-haiku-20240307' in option.features.chat.models
+      },
+      {
+        model: 'claude-3-opus-20240229',
+        short_name: 'Opus',
+        name: 'Anthropic / Claude 3 Opus',
+        supports_image: true,
+        supports_calls: false,
+        file_types: img_types,
+        is_enabled: workspace.subscription.plan.config.models['claude-3-opus-20240229'] ?? false,
+        is_available: option.features.chat.models is not defined or 'claude-3-opus-20240229' in option.features.chat.models
+      }
+    ]
+  },
+  {
+    is_available: option.cohere.api_key is defined and option.cohere.api_key is not empty,
+    models: [
+      {
+        model: 'command-r-plus',
+        short_name: 'Command R+',
+        name: 'Cohere / Command R+',
+        supports_image: false,
+        supports_calls: true,
+        file_types: types,
+        is_enabled: workspace.subscription.plan.config.models['command-r-plus'] ?? false,
+        is_available: option.features.chat.models is not defined or 'command-r-plus' in option.features.chat.models
+      },
+      {
+        model: 'command-r',
+        short_name: 'Command R',
+        name: 'Cohere / Command R',
+        supports_image: false,
+        supports_calls: true,
+        file_types: types,
+        is_enabled: workspace.subscription.plan.config.models['command-r'] ?? false,
+        is_available: option.features.chat.models is not defined or 'command-r' in option.features.chat.models
+      },
+      {
+        model: 'command',
+        short_name: 'Command',
+        name: 'Cohere / Command',
+        supports_image: false,
+        supports_calls: false,
+        file_types: [],
+        is_enabled: workspace.subscription.plan.config.models['command'] ?? false,
+        is_available: option.features.chat.models is not defined or 'command' in option.features.chat.models
+      },
+      {
+        model: 'command-light',
+        short_name: 'Command Light',
+        name: 'Cohere / Command Light',
+        supports_image: false,
+        supports_calls: false,
+        file_types: [],
+        is_enabled: workspace.subscription.plan.config.models['command-light'] ?? false,
+        is_available: option.features.chat.models is not defined or 'command-light' in option.features.chat.models
+      },
+    ]
+  },
+  {
+    is_available: option.xai.api_key is defined and option.xai.api_key is not empty,
+    models: [
+      {
+        model: 'grok-2-vision-1212',
+        short_name: 'Grok 2 Vision',
+        name: 'xAI / Grok 2 Vision',
+        supports_image: true,
+        supports_calls: true,
+        file_types: img_types|merge(types),
+        is_enabled: workspace.subscription.plan.config.models['grok-2-vision-1212'] ?? false,
+        is_available: option.features.chat.models is not defined or 'grok-2-vision-1212' in option.features.chat.models
+      },
+      {
+        model: 'grok-2-1212',
+        short_name: 'Grok 2',
+        name: 'xAI / Grok 2',
+        supports_image: false,
+        supports_calls: true,
+        file_types: types,
+        is_enabled: workspace.subscription.plan.config.models['grok-2-1212'] ?? false,
+        is_available: option.features.chat.models is not defined or 'grok-2-1212' in option.features.chat.models
+      },
+      {
+        model: 'grok-vision-beta',
+        short_name: 'Grok Vision Beta',
+        name: 'xAI / Grok Vision Beta',
+        supports_image: true,
+        supports_calls: true,
+        file_types: img_types|merge(types),
+        is_enabled: workspace.subscription.plan.config.models['grok-vision-beta'] ?? false,
+        is_available: option.features.chat.models is not defined or 'grok-vision-beta' in option.features.chat.models
+      },
+      {
+        model: 'grok-beta',
+        short_name: 'Grok Beta',
+        name: 'xAI / Grok Beta',
+        supports_image: false,
+        supports_calls: true,
+        file_types: types,
+        is_enabled: workspace.subscription.plan.config.models['grok-beta'] ?? false,
+        is_available: option.features.chat.models is not defined or 'grok-beta' in option.features.chat.models
+      }
+    ]
+  }
+] %}
+
+{% if option.ollama.models is defined %}
+	{% set models = [] %}
+	{% for model in option.ollama.models %}
+		{% set fileTypes = [] %}
+
+		{% if model.tools %}
+			{% set fileTypes = fileTypes|merge(types) %}
+		{% endif %}
+		{% if model.vision %}
+			{% set fileTypes = fileTypes|merge(img_types) %}
+		{% endif %}
+
+		{% set models = models|merge([{
+      model: model.key,
+      name: model.provider ? model.provider ~ ' / ' ~ model.name : model.name,
+      short_name: model.name,
+      supports_image: model.vision == 1,
+      supports_calls: model.tools == 1,
+      file_types: fileTypes,
+      is_enabled: workspace.subscription.plan.config.models[model.key] ?? false,
+      is_available: option.features.chat.models is not defined or model.key in option.features.chat.models
+    }]) %}
+	{% endfor %}
+
+	{% set adapters = adapters|merge([
+    {
+      is_available: true,
+      models: models
+    }
+  ]) %}
+{% endif %}
+
+{% for llm in option.llms ?? [] %}
+	{% set models = [] %}
+	{% for model in llm.models %}
+		{% set fileTypes = [] %}
+
+		{% if model.tools %}
+			{% set fileTypes = fileTypes|merge(types) %}
+		{% endif %}
+		{% if model.vision %}
+			{% set fileTypes = fileTypes|merge(img_types) %}
+		{% endif %}
+
+		{% set models = models|merge([{
+      model: model.key,
+      name: model.provider ? model.provider ~ ' / ' ~ model.name : model.name,
+      short_name: model.name,
+      supports_image: model.vision == 1,
+      supports_calls: model.tools == 1,
+      file_types: fileTypes,
+      is_enabled: workspace.subscription.plan.config.models[model.key] ?? false,
+      is_available: option.features.chat.models is not defined or model.key in option.features.chat.models
+    }]) %}
+	{% endfor %}
+
+	{% set adapters = adapters|merge([
+    {
+      is_available: true,
+      models: models
+    }
+  ]) %}
+{% endfor %}
+
+{% set active_menu = 'chat' %}
+{% set xdata %}
+chat(
+`{{ model ?? option.features.chat.default_model ?? 'gpt-3.5-turbo' }}`,
+{{ adapters|json_encode }},
+{{ (assistant ?? null )|json_encode }},
+{{ (conversation ?? null )|json_encode }},
+)
+{% endset %}
+{% block title p__('title', 'Chat')|title %}
+
+{% block template %}
+	<div class="flex flex-col gap-4 grow">
+		<div class="hidden md:block">
+			<div class="flex justify-between items-center">
+				{% include "snippets/back.twig" with {link: 'app/library/conversations', label: p__('button', 'Library'), icon: 'square-rounded-arrow-up-filled'} %}
+
+				<a href="app/chat" class="button button-xs button-dimmed">
+					<i class="text-lg ti ti-square-rounded-plus-filled"></i>
+					{{ p__('button', 'New chat') }}
+				</a>
+			</div>
+
+			<div class="relative mt-4">
+				<div class="absolute top-0 left-0 z-10 w-28 h-full bg-gradient-to-r to-transparent pointer-events-none from-main"></div>
+
+				<div class="flex">
+					<div class="flex overflow-hidden gap-2 justify-end items-center pr-1">
+						<template x-if="history === null">
+							<template x-for="i in 5" :key="i">
+								<div class="flex gap-2 items-center p-2 w-72 rounded-lg border shrink-0 border-line-dimmed" @click.prevent="select(i)">
+									<div class="avatar loading"></div>
+
+									<div class="grow">
+										<div class="my-1 w-2/3 h-4 loading"></div>
+
+										<div class="my-1 w-20 h-3 loading"></div>
+									</div>
+								</div>
+							</template>
+						</template>
+
+						<template x-if="history && history.length > 0">
+							<template x-for="i in history" :key="i.id">
+								<a :href="`app/chat/${i.id}`" class="flex gap-2 items-center p-2 w-72 rounded-lg border shrink-0 hover:border-line" :class="conversation?.id == i.id ? 'border-line' : 'border-line-dimmed'" @click.prevent="select(i)">
+									<x-avatar :title="i.title"></x-avatar>
+
+									<div class="grow">
+										<div x-text="i.title || `{{ __('Untitled conversation') }}`" class="overflow-hidden text-sm text-ellipsis text-nowrap max-w-52"></div>
+
+										<div class="flex">
+											<x-time :datetime="i.created_at" data-type="date" class="text-xs text-content-dimmed"></x-time>
+										</div>
+									</div>
+								</a>
+							</template>
+						</template>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="relative md:my-6" :class="conversation ? '' : 'flex justify-center md:my-auto'">
+			<template x-if="!conversation">
+				<div class="flex flex-col gap-6 my-10 text-center md:my-0">
+					<div class="mx-auto w-16 h-16 bg-gradient-to-br from-[#00A6FB] to-[#006ABF] tool-icon">
+						<div class="bg-gradient-to-br from-[#00A6FB] to-[#006ABF]"></div>
+
+						{% include "snippets/icons/chat.twig" %}
+					</div>
+
+					<template x-if="assistant">
+						<div>
+							<h1 x-text="assistant.name"></h1>
+							<p class="mt-1 text-lg font-light text-content-dimmed" x-text="assistant.description"></p>
+						</div>
+					</template>
+
+					<template x-if="!assistant">
+						<div>
+							<h1>{{ p__('heading', 'AI Chat') }}</h1>
+							<p class="mt-1 text-lg font-light text-content-dimmed">
+								{{ __('Chat with AI bots and assistants') }}
+							</p>
+						</div>
+					</template>
+				</div>
+			</template>
+
+			<template x-if="conversation">
+				<div class="flex flex-col gap-4">
+					<div class="grow">
+						<div class="text-xl autogrow-textarea font-editor-heading" :data-replicated-value="conversation.title">
+							<textarea placeholder="{{ __('Untitled conversation') }}" autocomplete="off" x-model="conversation.title" rows="1" @input.debounce.750ms="save(conversation)" placeholder="{{ __('Untitled conversation') }}" class="block px-0 py-0 w-full bg-transparent border-0 transition-colors appearance-none resize-none focus:ring-0 placeholder:text-content-dimmed placeholder:opacity-50 read-only:text-content-dimmed"></textarea>
+						</div>
+
+						<div class="mt-1">
+							<x-uuid x-text="conversation.id"></x-uuid>
+						</div>
+					</div>
+
+					<div class="flex gap-4 items-center">
+						<div class="flex gap-4 items-center mr-auto">
+							{% include "snippets/audience.twig" with {ref: 'conversation'} %}
+
+							<span class="flex gap-1 items-center text-sm text-content-dimmed">
+								<i class="text-base ti ti-coins"></i>
+								<x-credit :data-value="conversation.cost" format="{{ __(":count credits") }}"></x-credit>
+							</span>
+						</div>
+
+						<button @click="modal.open('delete-modal');" class="flex gap-1 items-center text-sm transition-all text-content-dimmed hover:text-content group">
+							<i class="text-xl ti ti-trash group-hover:text-failure"></i>
+						</button>
+					</div>
+
+					<div class="flex flex-col gap-10 mt-6">
+						<template x-for="node in tree">
+							<div>
+								{% include "snippets/cards/message.twig" with { ref: 'node.children[node.index]'} %}
+
+								<template x-if="node.children.length > 1">
+									<div class="flex gap-1 items-center pl-8 mt-2 text-xs text-content-dimmed">
+										<button type="button" :disabled="node.index==0" @click="node.index--; generateMap(node.children[node.index].id || null)" ; class="hover:text-content">
+											<i class="text-xs ti ti-chevron-left"></i>
+										</button>
+
+										<span>
+											<span x-text="node.index+1"></span>
+											<span>/</span>
+											<span x-text="node.children.length"></span>
+										</span>
+
+										<button type="button" :disabled="node.index+1 >= node.children.length" @click="node.index++; generateMap(node.children[node.index].id || null)" ; class="hover:text-content">
+											<i class="text-xs ti ti-chevron-right"></i>
+										</button>
+									</div>
+								</template>
+							</div>
+						</template>
+					</div>
+				</div>
+			</template>
+
+			<button x-ref="quote" class="hidden absolute top-0 left-1/2 z-40 gap-1 justify-center items-center px-2 py-1 -mt-8 h-6 text-sm font-bold rounded-md border shadow-md border-line bg-main" x-tooltip.raw="{{ __('Reply') }}" @click="selectQuote">
+				<i class="text-lg ti ti-corner-down-right"></i>
+				{{ p__('button', 'Reply') }}
+			</button>
+		</div>
+	</div>
+
+	<modal-element name="delete-modal">
+		<template x-if="conversation">
+			<form class="modal" @submit.prevent="remove(conversation);">
+				<div class="flex relative justify-center items-center mx-auto w-24 h-24 rounded-full text-failure/25">
+
+					<svg class="absolute top-0 left-0 w-full h-full" width="112" height="112" viewbox="0 0 112 112" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<circle cx="56" cy="56" r="55.5" stroke="currentColor" stroke-dasharray="8 8"/>
+					</svg>
+
+					<div class="flex justify-center items-center w-20 h-20 text-4xl rounded-full transition-all bg-failure/25 text-failure">
+						<i class="text-4xl ti ti-trash"></i>
+					</div>
+				</div>
+
+				<div class="mt-4 text-lg text-center">
+					{{ __('Do you really want to delete the conversation?') }}
+				</div>
+
+				<div class="flex gap-4 justify-center items-center mt-10">
+					<button class="button button-outline" @click="modal.close()" type="button">
+						{{ p__('button', 'No, cancel') }}
+					</button>
+
+					<button class="button button-failure" type="submit" :processing="isDeleting">
+						{% include "/snippets/spinner.twig" %}
+
+						{{ p__('button', 'Yes, delete') }}
+					</button>
+				</div>
+			</form>
+		</template>
+	</modal-element>
+
+	<modal-element name="options">
+		<form @submit.prevent="applyOptions" class="flex flex-col gap-6 modal">
+			<div class="flex justify-between items-center">
+				<h2 class="text-xl">{{ p__('heading', 'Options') }}</h2>
+
+				<button class="flex justify-center items-center w-8 h-8 rounded-full border border-transparent bg-line-dimmed hover:border-line" @click="modal.close()" type="button">
+					<i class="text-xl ti ti-x"></i>
+				</button>
+			</div>
+
+			<div>
+				<label>{{ p__('label', 'Model & assistant') }}</label>
+				<select class="mt-2 input border-line-dimmed hover:border-line" x-model="options.model">
+					<template x-for="a in adapters">
+						<option :value="a.model" x-text="a.name"></option>
+					</template>
+				</select>
+
+				<button type="button" class="flex relative gap-2 items-start mt-1 w-full text-left box hover:border-line group" @click="modal.open('assistant-list-modal')">
+					<x-avatar class="mt-0.5" :icon="options.assistant ? 'box' : 'sparkles'" :src="options.assistant ? options.assistant.avatar : `{{ option.features.chat.avatar is defined and option.features.chat.avatar ? option.features.chat.avatar : null }}`"></x-avatar>
+
+					<div class="grow">
+						<div class="flex gap-2 items-start">
+							<h3 x-text="options.assistant ? options.assistant.name : `{{ option.features.chat.name ?? 'AI' }}`" class="line-clamp-1"></h3>
+						</div>
+
+						<template x-if="options.assistant && options.assistant.expertise">
+							<div class="text-sm text-content-dimmed" x-text="options.assistant.expertise"></div>
+						</template>
+
+						<template x-if="!options.assistant">
+							<div class="text-sm text-content-dimmed">
+								{{ __('Universal AI bot') }}
+							</div>
+						</template>
+					</div>
+
+					<i class="mt-1 ti ti-selector text-content-dimmed"></i>
+				</button>
+			</div>
+
+			<div>
+				<button type="submit" class="w-full button">
+					{{ p__('button', 'Confirm') }}
+				</button>
+			</div>
+		</form>
+	</modal-element>
+
+	<modal-element name="assistant-list-modal">
+		<div class="flex flex-col gap-6 modal">
+			<div class="flex justify-between items-center">
+				<h2 class="text-xl">{{ p__('heading', 'Assistants') }}</h2>
+
+				<button class="flex justify-center items-center w-8 h-8 rounded-full border border-transparent bg-line-dimmed hover:border-line" @click="modal.close()" type="button">
+					<i class="text-xl ti ti-x"></i>
+				</button>
+			</div>
+
+			<div>
+				<input type="text" class="mt-2 input" placeholder="{{ __('Search assistants') }}" x-model="query">
+			</div>
+
+			<div class="flex flex-col gap-1 pr-1 overflow-y-scroll max-h-[424px]">
+
+				<div class="flex relative gap-2 items-start box hover:border-line group">
+
+					<button type="button" class="absolute top-0 left-0 w-full h-full opacity-0" @click="options.assistant = null; modal.open('options')"></button>
+
+					<x-avatar icon="sparkles" :src="`{{ option.features.chat.avatar is defined and option.features.chat.avatar ? option.features.chat.avatar : null }}`"></x-avatar>
+
+					<div class="grow">
+						<div class="flex gap-2 items-start">
+							<h3 class="line-clamp-1">
+								{{ option.features.chat.name ?? 'AI' }}
+							</h3>
+
+							<template x-if="assistant">
+								<span class="flex invisible ml-auto whitespace-nowrap badge group-hover:visible shrink-0">
+									{{ p__('button', 'Select') }}
+								</span>
+							</template>
+
+							<template x-if="!assistant">
+								<span class="ml-auto badge badge-success">
+									{{ p__('badge', 'Selected') }}
+								</span>
+							</template>
+						</div>
+
+						<div class="text-sm">
+							{{ __('Universal AI bot') }}
+						</div>
+					</div>
+				</div>
+
+				<template x-for="v in assistants" :key="v.id">
+					<template x-if="doesAssistantMatch(v, query)">
+						<div class="flex relative gap-2 items-start box hover:border-line group">
+
+							<button type="button" class="absolute top-0 left-0 w-full h-full opacity-0" @click="options.assistant = v; modal.open('options')"></button>
+
+							<x-avatar icon="box" :src="v.avatar" :title="v.name"></x-avatar>
+
+							<div class="grow">
+								<div class="flex gap-2 items-start">
+									<h3 x-text="v.name" class="line-clamp-1"></h3>
+
+									<template x-if="!assistant || assistant.id != v.id">
+										<span class="flex invisible ml-auto whitespace-nowrap badge group-hover:visible shrink-0">
+											{{ p__('button', 'Select') }}
+										</span>
+									</template>
+
+									<template x-if="assistant && assistant.id == v.id">
+										<span class="ml-auto badge badge-success">
+											{{ p__('badge', 'Selected') }}
+										</span>
+									</template>
+								</div>
+
+								<template x-if="v.expertise">
+									<div class="text-sm" x-text="v.expertise"></div>
+								</template>
+
+								<template x-if="v.description">
+									<div class="mt-2 text-xs text-content-dimmed" x-text="v.description"></div>
+								</template>
+							</div>
+						</div>
+					</template>
+				</template>
+			</div>
+		</div>
+	</modal-element>
+{% endblock %}
+
+
+{% block footer %}
+	<div class="sticky bottom-0 z-40 mt-auto">
+		<div class="h-4 bg-gradient-to-t to-transparent from-main"></div>
+
+		<div class="bg-main">
+			<form @submit.prevent="{{ workspace.subscription.plan.config.chat.is_enabled is defined and workspace.subscription.plan.config.chat.is_enabled ? 'submit' : '' }}">
+
+				<template x-if="adapter && adapter.file_types.length > 0">
+					<x-dropzone>
+						<input type="file" @change="file = $refs.file.files[0];" name="file" :accept="adapter.file_types.join(',')" class="hidden" x-ref="file">
+
+						<div class="flex flex-col gap-6 items-center">
+							<i class="text-6xl ti ti-upload text-content-dimmed"></i>
+							<div class="flex flex-col gap-2 text-center max-w-[30rem]">
+								<h2>{{ p__('heading', 'Drop the file here') }}</h2>
+
+								<div class="text-sm text-content-dimmed" x-text="adapter.file_types.join(', ')"></div>
+							</div>
+						</div>
+					</x-dropzone>
+				</template>
+
+				<div class="flex justify-between items-end mb-3">
+					<div>
+						<template x-if="assistant">
+							<button type="button" @click="showOptions(null, 'assistant-list-modal');" class="flex gap-0.5 items-center group">
+								<span class="font-bold" x-text="assistant.name"></span>
+								<i class="text-base ti ti-corner-right-up text-content-dimmed group-hover:text-content"></i>
+							</button>
+						</template>
+
+						<template x-if="!assistant">
+							<button type="button" @click="showOptions(null, 'assistant-list-modal');" class="flex gap-0.5 items-center group">
+								<span class="font-bold">{{ option.features.chat.name ?? p__('heading', 'AI Chat') }}</span>
+								<i class="text-base ti ti-corner-right-up text-content-dimmed group-hover:text-content"></i>
+							</button>
+						</template>
+
+						<div class="flex gap-2 items-center">
+							<template x-if="assistant">
+								<div class="text-sm text-content-dimmed" x-text="assistant.expertise || assistant.description"></div>
+							</template>
+
+							<template x-if="!assistant">
+								<div class="text-sm text-content-dimmed">
+									{{ __('Universal AI assistant') }}
+								</div>
+							</template>
+						</div>
+					</div>
+
+					<div class="flex gap-2 items-center">
+						<div class="flex gap-1 items-center">
+							<template x-if="adapter && adapter.supports_image">
+								<i class="text-base cursor-auto ti ti-photo text-content-dimmed hover:text-content" x-tooltip.raw="{{ __('AI vision enabled') }}"></i>
+							</template>
+
+							{% if capabilities|length > 0 %}
+								<template x-if="adapter && adapter.supports_calls">
+									<i class="text-base cursor-auto ti ti-bolt text-content-dimmed hover:text-content" x-tooltip.raw="{{ __('Supercharged') }}"></i>
+								</template>
+							{% endif %}
+						</div>
+
+						<template x-if="adapter">
+							<button type="button" class="capitalize button button-xs button-dimmed" @click="showOptions()">
+								<span x-text="adapter.short_name"></span>
+								<i class="ti ti-chevron-down"></i>
+							</button>
+						</template>
+					</div>
+				</div>
+
+				<div class="relative p-1 rounded-xl bg-line-dimmed has-[textarea:focus]:bg-gradient-to-br has-[textarea:focus]:from-gradient-from has-[textarea:focus]:to-gradient-to">
+
+					<template x-if="quote">
+						<div class="flex gap-2 items-start p-2 pl-4 text-sm rounded-tl-lg rounded-tr-lg bg-line-super-dimmed text-content-dimmed">
+
+							<i class="w-6 text-base text-center ti ti-corner-down-right"></i>
+
+							<div x-html="quote" class="overflow-y-auto max-h-24 grow"></div>
+
+							<button type="button" @click="quote=null" class="flex justify-center items-center w-10 hover:text-content">
+								<i class="text-base ti ti-x"></i>
+							</button>
+						</div>
+					</template>
+
+					<div class="flex gap-2 items-end p-2 rounded-lg bg-main" :class="{
+																																			            'pl-4': !adapter || adapter.file_types.length <= 0,
+																																			            'rounded-tl-none' : quote,
+																																			            'rounded-tr-none' : quote
+																																			          }">
+
+						<template x-if="adapter && adapter.file_types.length > 0">
+							<div>
+								<template x-if="!file">
+									<button type="button" class="flex justify-center items-center w-10 h-10 text-content-dimmed hover:text-content" @click="$refs.file.click()">
+										<i class="-rotate-45 ti ti-paperclip"></i>
+									</button>
+								</template>
+
+								<template x-if="file">
+									<button type="button" class="flex relative p-0 w-10 h-10 rounded-lg button button-dimmed group" @click="file=null; $refs.file.value=null; " x-tooltip="file.name">
+
+										<template x-if="file.type.startsWith('image/')">
+											<img :src="file ? URL.createObjectURL(file) : null" class="object-cover absolute top-0 left-0 w-full h-full rounded-lg">
+										</template>
+
+										<template x-if="!file.type.startsWith('image/')">
+											<i class="ti ti-file-filled"></i>
+										</template>
+
+										<div class="hidden absolute top-0 left-0 justify-center items-center w-full h-full rounded-lg bg-content/50 text-main group-hover:flex">
+											<i class="text-base rounded-full ti ti-circle-x-filled bg-content"></i>
+										</div>
+									</button>
+								</template>
+							</div>
+						</template>
+
+						<div class="overflow-y-auto pt-2 mb-2 max-h-36 autogrow-textarea text-content grow" :data-replicated-value="prompt">
+							<textarea placeholder="{{ __('Type a prompt here...') }}" autocomplete="off" rows="1" x-model="prompt" x-ref="prompt" class="block p-0 text-base bg-transparent border-none focus:ring-0 placeholder:text-content-dimmed" required @keydown.enter="{{ workspace.subscription.plan.config.chat.is_enabled is defined and workspace.subscription.plan.config.chat.is_enabled ? 'enter' : '' }}" @paste="paste"></textarea>
+						</div>
+
+						<div class="flex gap-2 items-center ml-auto">
+							{% if workspace.subscription.plan.config.chat.is_enabled is defined and workspace.subscription.plan.config.chat.is_enabled %}
+								<template x-if="adapter">
+									<button type="submit" class="p-0 w-10 h-10 button button-accent" :processing="isProcessing" :disabled="!prompt">
+										{% include "/snippets/spinner.twig" %}
+
+										<template x-if="!isProcessing">
+											<i class="ti ti-arrow-up"></i>
+										</template>
+									</button>
+								</template>
+
+								<template x-if="!adapter">
+									<a href="app/billing" class="p-0 w-10 h-10 button button-dimmed" x-tooltip.raw="{{ __('Upgrade your plan') }}">
+										<i class="ti ti-lock-up"></i>
+									</a>
+								</template>
+							{% else %}
+								<a href="app/billing" class="p-0 w-10 h-10 button button-dimmed" x-tooltip.raw="{{ __('Upgrade your plan') }}">
+									<i class="ti ti-lock-up"></i>
+								</a>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			</form>
+
+			{% include "/sections/footer.twig" %}
+		</div>
+	</div>
+{% endblock %}

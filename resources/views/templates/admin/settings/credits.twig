@@ -1,0 +1,887 @@
+{% extends "/layouts/main.twig" %}
+{% set active_menu = 'settings' %}
+
+{% set sections = [
+  {
+    heading: 'OpenAI',
+    groups: [
+      [
+        {
+          model: 'o1-preview-input',
+          label: 'O1 Preview',
+          badge: __('Input token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.001875'
+        },
+        {
+          model: 'o1-preview-output',
+          label: 'O1 Preview',
+          badge: __('Output token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.0075'
+        },
+        {
+          model: 'o1-mini-input',
+          label: 'O1 Mini',
+          badge: __('Input token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.000375'
+        },
+        {
+          model: 'o1-mini-output',
+          label: 'O1 Mini',
+          badge: __('Output token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.0015'
+        },
+        {
+          model: 'gpt-4o-input',
+          label: 'gpt-4o',
+          badge: __('Input token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.00000625'
+        },
+        {
+          model: 'gpt-4o-output',
+          label: 'gpt-4o',
+          badge: __('Output token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.00001875'
+        },
+        {
+          model: 'gpt-4o-mini-input',
+          label: 'gpt-4o-mini',
+          badge: __('Input token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.00001875'
+        },
+        {
+          model: 'gpt-4o-mini-output',
+          label: 'gpt-4o-mini',
+          badge: __('Output token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.000075'
+        },
+        {
+          model: 'gpt-4-turbo-input',
+          label: 'gpt-4-turbo',
+          badge: __('Input token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.00125'
+        },
+        {
+          model: 'gpt-4-turbo-output',
+          label: 'gpt-4-turbo',
+          badge: __('Output token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.00375'
+        },
+        {
+          model: 'gpt-4-input',
+          label: 'gpt-4',
+          badge: __('Input token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.00375'
+        },
+        {
+          model: 'gpt-4-output',
+          label: 'gpt-4',
+          badge: __('Output token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.0075'
+        },
+        {
+          model: 'gpt-3.5-turbo-input',
+          label: 'gpt-3.5-turbo',
+          badge: __('Input token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.0000625'
+        },
+        {
+          model: 'gpt-3.5-turbo-output',
+          label: 'gpt-3.5-turbo',
+          badge: __('Output token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.0001875'
+        },
+        {
+          model: 'gpt-3.5-turbo-instruct-input',
+          label: 'gpt-3.5-turbo-instruct',
+          badge: __('Input token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.0001875'
+        },
+        {
+          model: 'gpt-3.5-turbo-instruct-output',
+          label: 'gpt-3.5-turbo-instruct',
+          badge: __('Output token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.00025'
+        }
+      ],
+
+      [
+        {
+          model: 'dall-e-3-standard-1024',
+          label: 'DALL·E 3',
+          badge: __('Standard, 1024×1024'),
+          unit: __('Image'),
+          info: __("1 Credit = :count images"),
+          placeholder: '5'
+        },
+        {
+          model: 'dall-e-3-standard-1792',
+          label: 'DALL·E 3',
+          badge: __('Standard, 1024x1792, 1792x1024'),
+          unit: __('Image'),
+          info: __("1 Credit = :count images"),
+          placeholder: '10'
+        },
+        {
+          model: 'dall-e-3-hd-1024',
+          label: 'DALL·E 3',
+          badge: __('HD, 1024×1024'),
+          unit: __('Image'),
+          info: __("1 Credit = :count images"),
+          placeholder: '10'
+        },
+        {
+          model: 'dall-e-3-hd-1792',
+          label: 'DALL·E 3',
+          badge: __('HD, 1024x1792, 1792x1024'),
+          unit: __('Image'),
+          info: __("1 Credit = :count images"),
+          placeholder: '15'
+        },
+      ],
+
+      [
+        {
+          model: 'dall-e-2-1024',
+          label: 'DALL·E 2',
+          badge: __('1024×1024'),
+          unit: __('Image'),
+          info: __("1 Credit = :count images"),
+          placeholder: '2.5'
+        },
+        {
+          model: 'dall-e-2-512',
+          label: 'DALL·E 2',
+          badge: __('512×512'),
+          unit: __('Image'),
+          info: __("1 Credit = :count images"),
+          placeholder: '2.25'
+        },
+        {
+          model: 'dall-e-2-256',
+          label: 'DALL·E 2',
+          badge: __('256×256'),
+          unit: __('Image'),
+          info: __("1 Credit = :count images"),
+          placeholder: '2'
+        },
+      ],
+
+      [
+        {
+          model: 'whisper-1',
+          label: 'Whisper',
+          badge: null,
+          unit: __('Seconds'),
+          info: __("1 Credit = :count seconds"),
+          placeholder: '0.0125'
+        }
+      ],
+
+      [
+        {
+          model: 'tts-1',
+          label: 'TTS',
+          badge: null,
+          unit: __('Character'),
+          info: __("1 Credit = :count characters"),
+          placeholder: '0.001875'
+        },
+
+        {
+          model: 'tts-1-hd',
+          label: 'TTS',
+          badge: __('HD'),
+          unit: __('Character'),
+          info: __("1 Credit = :count characters"),
+          placeholder: '0.00375'
+        }
+      ],
+
+      [
+        {
+          model: 'text-embedding-3-small',
+          label: 'Embeddings 3',
+          badge: "Small",
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.0000025'
+        },
+        
+        {
+          model: 'text-embedding-3-large',
+          label: 'Embeddings 3',
+          badge: "Large",
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.00001625'
+        },
+        
+        {
+          model: 'text-embedding-ada-002',
+          label: 'Ada v2',
+          badge: null,
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.0000125'
+        },
+      ]
+    ]
+  },
+
+  {
+    heading: 'Cohere',
+    groups: [
+     [
+      {
+        model: 'command-r-plus-input',
+        label: 'Command R+',
+        badge: __('Input token'),
+        unit: __('Token'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.000375'
+      },
+      {
+        model: 'command-r-plus-output',
+        label: 'Command R+',
+        badge: __('Output token'),
+        unit: __('Token'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.001875'
+      },
+      {
+        model: 'command-r-input',
+        label: 'Command R',
+        badge: __('Input token'),
+        unit: __('Token'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.0000625'
+      },
+      {
+        model: 'command-r-output',
+        label: 'Command R',
+        badge: __('Output token'),
+        unit: __('Token'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.0001875'
+      },
+      {
+        model: 'command-input',
+        label: 'Command',
+        badge: __('Input token'),
+        unit: __('Token'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.0000625'
+      },
+      {
+        model: 'command-output',
+        label: 'Command',
+        badge: __('Output token'),
+        unit: __('Token'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.0001875'
+      },
+      {
+        model: 'command-light-input',
+        label: 'Command Light',
+        badge: __('Input token'),
+        unit: __('Token'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.0000625'
+      },
+      {
+        model: 'command-light-output',
+        label: 'Command Light',
+        badge: __('Output token'),
+        unit: __('Token'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.0001875'
+      },
+     ] 
+    ]
+  },
+  
+  {
+    heading: 'Anthropic / Claude AI',
+    groups: [
+     [
+      {
+        model: 'claude-3-5-sonnet-latest-input',
+        label: 'Sonnet 3.5',
+        badge: __('Input token'),
+        unit: __('Token'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.000375'
+      },
+      {
+        model: 'claude-3-5-sonnet-latest-output',
+        label: 'Sonnet 3.5',
+        badge: __('Output token'),
+        unit: __('Token'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.001875'
+      },
+      {
+        model: 'claude-3-5-haiku-latest-input',
+        label: 'Haiku 3.5',
+        badge: __('Input token'),
+        unit: __('Token'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.000125'
+      },
+      {
+        model: 'claude-3-5-haiku-latest-output',
+        label: 'Haiku 3.5',
+        badge: __('Output token'),
+        unit: __('Token'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.000625'
+      },
+      {
+        model: 'claude-3-haiku-20240307-input',
+        label: 'Haiku',
+        badge: __('Input token'),
+        unit: __('Token'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.00003125'
+      },
+      {
+        model: 'claude-3-haiku-20240307-output',
+        label: 'Haiku',
+        badge: __('Output token'),
+        unit: __('Token'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.00015625'
+      },
+      {
+        model: 'claude-3-sonnet-20240229-input',
+        label: 'Sonnet',
+        badge: __('Input token'),
+        unit: __('Token'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.000375'
+      },
+      {
+        model: 'claude-3-sonnet-20240229-output',
+        label: 'Sonnet',
+        badge: __('Output token'),
+        unit: __('Token'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.001875'
+      },
+      {
+        model: 'claude-3-opus-20240229-input',
+        label: 'Opus',
+        badge: __('Input token'),
+        unit: __('Token'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.001875'
+      },
+      {
+        model: 'claude-3-opus-20240229-output',
+        label: 'Opus',
+        badge: __('Output token'),
+        unit: __('Token'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.009375'
+      },
+     ] 
+    ]
+  },
+
+  {
+    heading: 'xAI',
+    groups: [
+      [
+        {
+          model: 'grok-2-vision-1212-input',
+          label: 'Grok 2 Vision',
+          badge: __('Input token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.00025'
+        },
+        {
+          model: 'grok-2-vision-1212-output',
+          label: 'Grok 2 Vision',
+          badge: __('Output token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.00125'
+        },
+        {
+          model: 'grok-2-vision-1212-image',
+          label: 'Grok 2 Vision',
+          badge: __('Image token'),
+          unit: __('Image'),
+          info: __("1 Credit = :count image tokens"),
+          placeholder: '0.00025'
+        },
+      ],
+      [
+        {
+          model: 'grok-2-1212-input',
+          label: 'Grok 2',
+          badge: __('Input token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.00025'
+        },
+        {
+          model: 'grok-2-1212-output',
+          label: 'Grok 2',
+          badge: __('Output token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.00125'
+        },
+      ],
+      [
+        {
+          model: 'grok-vision-beta-input',
+          label: 'Grok Vision Beta',
+          badge: __('Input token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.000625'
+        },
+        {
+          model: 'grok-vision-beta-output',
+          label: 'Grok Vision Beta',
+          badge: __('Output token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.001875'
+        },
+        {
+          model: 'grok-vision-beta-image',
+          label: 'Grok Vision Beta',
+          badge: __('Image token'),
+          unit: __('Image'),
+          info: __("1 Credit = :count image tokens"),
+          placeholder: '0.000625'
+        },
+      ],
+      [
+        {
+          model: 'grok-beta-input',
+          label: 'Grok Beta',
+          badge: __('Input token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.000625'
+        },
+        {
+          model: 'grok-beta-output',
+          label: 'Grok Beta',
+          badge: __('Output token'),
+          unit: __('Token'),
+          info: __("1 Credit = :count tokens"),
+          placeholder: '0.001875'
+        }
+      ]
+    ]
+  },
+  
+  {
+    heading: 'ElevenLabs',
+    groups: [
+     [
+      {
+        model: 'elevenlabs',
+        label: __('All Models'),
+        badge: null,
+        unit: __('Character'),
+        info: __("1 Credit = :count characters"),
+        placeholder: '0.020625'
+      }
+     ] 
+    ]
+  },
+
+  {
+    heading: 'Google',
+    groups: [
+     [
+      {
+        model: 'google-tts-standard',
+        label: __('Google TTS'),
+        badge: __('Standard'),
+        unit: __('Character'),
+        info: __("1 Credit = :count characters"),
+        placeholder: '0.0005'
+      },
+      {
+        model: 'google-tts-studio',
+        label: __('Google TTS'),
+        badge: __('Studio'),
+        unit: __('Byte'),
+        info: __("1 Credit = :count bytes"),
+        placeholder: '0.02'
+      },
+      {
+        model: 'google-tts-premium',
+        label: __('Google TTS'),
+        badge: __('Premium'),
+        unit: __('Byte'),
+        info: __("1 Credit = :count bytes"),
+        placeholder: '0.002'
+      },
+     ] 
+    ]
+  },
+
+  {
+    heading: 'Azure',
+    groups: [
+     [
+      {
+        model: 'azure-tts',
+        label: __('Azure TTS'),
+        badge: null,
+        unit: __('Character'),
+        info: __("1 Credit = :count characters"),
+        placeholder: '0.001875'
+      }
+     ] 
+    ]
+  },
+
+  {
+    heading: 'FalAI',
+    groups: [
+     [
+      {
+        model: 'flux/dev',
+        label: __('FLUX.1 [dev]'),
+        badge: null,
+        unit: __('MegaPixels'),
+        info: __("1 Credit = :count mega pixels"),
+        placeholder: '3.125'
+      },
+      {
+        model: 'flux/schnell',
+        label: __('FLUX.1 [schnell]'),
+        badge: null,
+        unit: __('MegaPixels'),
+        info: __("1 Credit = :count mega pixels"),
+        placeholder: '0.375'
+      },
+      {
+        model: 'flux-pro',
+        label: __('FLUX.1 [pro]'),
+        badge: null,
+        unit: __('MegaPixels'),
+        info: __("1 Credit = :count mega pixels"),
+        placeholder: '6.25'
+      },
+      {
+        model: 'flux-realism',
+        label: __('Flux Realism'),
+        badge: null,
+        unit: __('MegaPixels'), 
+        info: __("1 Credit = :count mega pixels"),
+        placeholder: '6.25'
+      }
+     ] 
+    ]
+  },
+
+  {
+    heading: 'StabilityAI',
+    groups: [
+     [
+      {
+        model: 'sd-ultra',
+        label: 'Ultra',
+        badge: null,
+        unit: __('Image'),
+        info: __("1 Credit = :count images"),
+        placeholder: '10'
+      },
+      {
+        model: 'sd-core',
+        label: 'Core',
+        badge: null,
+        unit: __('Image'),
+        info: __("1 Credit = :count images"),
+        placeholder: '3.75'
+      },
+      {
+        model: 'sd3-large',
+        label: 'SD3 Large',
+        badge: null,
+        unit: __('Image'),
+        info: __("1 Credit = :count images"),
+        placeholder: '8.125'
+      },
+      {
+        model: 'sd3-large-turbo',
+        label: 'SD3 Large Turbo',
+        badge: null,
+        unit: __('Image'),
+        info: __("1 Credit = :count images"),
+        placeholder: '5'
+      },
+      {
+        model: 'sd3-medium',
+        label: 'SD3 Medium',
+        badge: null,
+        unit: __('Image'),
+        info: __("1 Credit = :count images"),
+        placeholder: '4.375'
+      },
+      {
+        model: 'stable-diffusion-xl-1024-v1-0',
+        label: 'SDXL 1.0',
+        badge: null,
+        unit: __('Image'),
+        info: __("1 Credit = :count images"),
+        placeholder: '0.75'
+      },
+      {
+        model: 'stable-diffusion-v1-6',
+        label: 'SD 1.6',
+        badge: null,
+        unit: __('Image'),
+        info: __("1 Credit = :count images"),
+        placeholder: '1.25'
+      }
+     ] 
+    ]
+  },
+
+  {
+    heading: 'Clipdrop',
+    groups: [
+     [
+      {
+        model: 'clipdrop',
+        label: __('All Models'),
+        badge: null,
+        unit: __('Clipdrop credits'),
+        info: __("1 Credit = :count clipdrop credits"),
+        placeholder: '62.5'
+      }
+     ] 
+    ]
+  },
+
+  {
+    heading: 'AI/ML API',
+    groups: [
+     [
+      {
+        model: 'aimlapi/chirp-v3.5',
+        label: 'Chirp 3.5',
+        badge: null,
+        unit: __('tokens'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.000062375'
+      },
+      {
+        model: 'aimlapi/chirp-v3',
+        label: 'Chirp 3.0',
+        badge: null,
+        unit: __('tokens'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.000062375'
+      }
+     ] 
+    ]
+  },
+
+  {
+    heading: 'Capabilities',
+    groups: [
+     [
+      {
+        model: 'serper',
+        label: 'Serper API',
+        badge: null,
+        unit: __('Serper credits'),
+        info: __("1 Credit = :count Serper credits"),
+        placeholder: '0.125'
+      },
+      {
+        model: 'searchapi',
+        label: 'Search API',
+        badge: null,
+        unit: __('Searches'),
+        info: __("1 Credit = :count Search API searches"),
+        placeholder: '0.5'
+      }
+     ] 
+    ]
+  },
+] %}
+
+{% if option.ollama.models is defined %}
+	{% set group = [] %}
+	{% for model in option.ollama.models %}
+		{% set group = group|merge([
+      {
+        model: model.key ~ '-input',
+        label: model.name,
+        badge: __('Input token'),
+        unit: __('Token'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.000000'
+      },
+      {
+        model: model.key ~ '-output',
+        label: model.name,
+        badge: __('Output token'),
+        unit: __('Token'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.000000'
+      }
+  ]) %}
+	{% endfor %}
+
+	{% set sections = sections|merge([
+    {
+      heading: 'Ollama',
+      groups: [group]
+    }
+  ]) %}
+{% endif %}
+
+{% for llm in option.llms ?? [] %}
+	{% set group = [] %}
+	{% for model in llm.models %}
+		{% set group = group|merge([
+      {
+        model: model.key ~ '-input',
+        label: model.name,
+        badge: __('Input token'),
+        unit: __('Token'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.000000'
+      },
+      {
+        model: model.key ~ '-output',
+        label: model.name,
+        badge: __('Output token'),
+        unit: __('Token'),
+        info: __("1 Credit = :count tokens"),
+        placeholder: '0.000000'
+      }
+  ]) %}
+	{% endfor %}
+
+	{% set sections = sections|merge([
+    {
+      heading: llm.name,
+      groups: [group]
+    }
+  ]) %}
+{% endfor %}
+
+
+{% set xdata = 'settings' %}
+{% block title p__('title', 'Credit ratios')|title %}
+
+{% block template %}
+	<div>
+		{% include "snippets/back.twig" with {link: 'admin/settings', label: 'Settings'} %}
+
+		<h1 class="mt-4">{{ p__('heading', 'Credit ratios') }}</h1>
+	</div>
+
+	<x-form>
+		<form class="flex flex-col gap-8" @submit.prevent="submit" x-ref="form">
+			<div class="flex flex-col gap-2">
+				{% for section in sections %}
+					<section class="grid grid-cols-2 gap-6 box" data-density="comfortable">
+						<h2 class="col-span-2">{{ section.heading }}</h2>
+
+						{% for group in section.groups %}
+							{% if loop.index0 > 0 %}
+								<hr class="col-span-2">
+							{% endif %}
+
+							{% for input in group %}
+								<div x-data="{ val: `{{ option.credit_rate[input.model] ?? 'null' }}` }">
+									<label for="{{ input.model }}">
+										<span class="uppercase">
+											{{ input.label }}
+										</span>
+
+										{% if input.badge %}
+											<span class="text-content-dimmed">({{ input.badge }})</span>
+										{% endif %}
+									</label>
+
+									<div class="flex overflow-hidden mt-2 text-xs font-bold uppercase rounded-lg border border-line bg bg-intermediate text-intermediate-content-dimmed">
+										<div class="flex justify-between items-center px-3 w-28 shrink-0">
+											<span>{{ input.unit }}</span>
+											<span class="text-base">1</span>
+										</div>
+
+										<div class="flex items-center pl-3 border-l grow bg-main border-line">
+											<span class="shrink-0">{{ p__('label', 'Credit') }}</span>
+
+											<input type="text" id="{{ input.model }}" min="0" name="credit_rate[{{ input.model }}]" class="text-right border-none input bg-main focus:ring-0 text-content" autocomplete="off" placeholder="{{ input.placeholder }}" value="{{ option.credit_rate[input.model] ?? '' }}" x-mask:dynamic="$money($input, '.', '', 9)" required x-model="val"/>
+										</div>
+									</div>
+
+									<div class="mt-1 h-4 text-xs uppercase text-content-dimmed">
+										<template x-if="val != 0">
+											<span>
+												<x-credit :data-value="1/val" format="{{ input.info }}"></x-credit>
+											</span>
+										</template>
+									</div>
+								</div>
+							{% endfor %}
+						{% endfor %}
+					</section>
+				{% endfor %}
+			</div>
+
+			<div class="flex gap-4 justify-end">
+				<a href="admin/settings" class="button button-outline">
+					{{ p__('button', 'Cancel') }}
+				</a>
+
+				<button type="submit" class="button button-accent" :processing="isProcessing">
+					{% include "/snippets/spinner.twig" %}
+
+					{{ p__('button', 'Save changes') }}
+				</button>
+			</div>
+		</form>
+	</x-form>
+{% endblock %}

@@ -1,0 +1,199 @@
+<section class="flex flex-col gap-6 box" data-density="comfortable">
+  <div class="flex gap-2 justify-between items-center">
+    <h2>{{ p__('heading', 'Overview') }}</h2>
+
+    <span class="badge">
+      {{ p__('button', 'Today') }}
+    </span>
+  </div>
+
+  <div class="grid grid-cols-2 gap-1 md:grid-cols-4">
+    <div class="flex flex-col gap-4 items-center box">
+      <x-avatar class="bg-content text-main" icon="decimal"></x-avatar>
+
+      <div>
+        <div class="text-sm text-center text-content-dimmed">
+          {{ __('Credit usage') }}
+        </div>
+
+        <template x-if="!stats">
+          <div class="flex gap-2 justify-center items-center mt-1">
+            <span class="w-6 h-4 loading"></span>
+            <span class="w-16 badge loading">
+            </span>
+          </div>
+        </template>
+
+        <template x-if="stats">
+          <div class="flex gap-2 justify-center items-center mt-1">
+            <span class="font-bold" x-text="stats.usage.metric"></span>
+            <template x-if="stats.usage.change > 0">
+              <span class="badge badge-success">
+                <i class="ti ti-arrow-up"></i>
+                <span x-text="stats.usage.change"></span>%
+              </span>
+            </template>
+
+            <template x-if="stats.usage.change < 0">
+              <span class="badge badge-failure">
+                <i class="ti ti-arrow-down"></i>
+                <span x-text="stats.usage.change"></span>%
+              </span>
+            </template>
+
+            <template x-if="stats.usage.change == 0">
+              <span class="badge">
+                <span x-text="stats.usage.change"></span>%
+              </span>
+            </template>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4 items-center box">
+      <x-avatar class="bg-content text-main" icon="users"></x-avatar>
+
+      <div>
+        <div class="text-sm text-center text-content-dimmed">
+          {{ __('New users') }}
+        </div>
+
+        <template x-if="!stats">
+          <div class="flex gap-2 justify-center items-center mt-1">
+            <span class="w-6 h-4 loading"></span>
+            <span class="w-16 badge loading">
+            </span>
+          </div>
+        </template>
+
+        <template x-if="stats">
+          <div class="flex gap-2 justify-center items-center mt-1">
+            <span class="font-bold" x-text="stats.signup.metric"></span>
+            <template x-if="stats.signup.change > 0">
+              <span class="badge badge-success">
+                <i class="ti ti-arrow-up"></i>
+                <span x-text="stats.signup.change"></span>%
+              </span>
+            </template>
+
+            <template x-if="stats.signup.change < 0">
+              <span class="badge badge-failure">
+                <i class="ti ti-arrow-down"></i>
+                <span x-text="stats.signup.change"></span>%
+              </span>
+            </template>
+
+            <template x-if="stats.signup.change == 0">
+              <span class="badge">
+                <span x-text="stats.signup.change"></span>%
+              </span>
+            </template>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4 items-center box">
+      <x-avatar class="bg-content text-main" icon="coins"></x-avatar>
+
+      <div>
+        <div class="text-sm text-center text-content-dimmed">
+          {{ __('New orders') }}
+        </div>
+
+        <template x-if="!stats">
+          <div class="flex gap-2 justify-center items-center mt-1">
+            <span class="w-6 h-4 loading"></span>
+            <span class="w-16 badge loading">
+            </span>
+          </div>
+        </template>
+
+        <template x-if="stats">
+          <div class="flex gap-2 justify-center items-center mt-1">
+            <span class="font-bold" x-text="stats.order.metric"></span>
+            <template x-if="stats.order.change > 0">
+              <span class="badge badge-success">
+                <i class="ti ti-arrow-up"></i>
+                <span x-text="stats.order.change"></span>%
+              </span>
+            </template>
+
+            <template x-if="stats.order.change < 0">
+              <span class="badge badge-failure">
+                <i class="ti ti-arrow-down"></i>
+                <span x-text="stats.order.change"></span>%
+              </span>
+            </template>
+
+            <template x-if="stats.order.change == 0">
+              <span class="badge">
+                <span x-text="stats.order.change"></span>%
+              </span>
+            </template>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4 items-center box">
+      <x-avatar class="bg-content text-main" icon="refresh"></x-avatar>
+
+      <div>
+        <div class="text-sm text-center text-content-dimmed">
+          {{ __('New subscriptions') }}
+        </div>
+
+        <template x-if="!stats">
+          <div class="flex gap-2 justify-center items-center mt-1">
+            <span class="w-6 h-4 loading"></span>
+            <span class="w-16 badge loading">
+            </span>
+          </div>
+        </template>
+
+        <template x-if="stats">
+          <div class="flex gap-2 justify-center items-center mt-1">
+            <span class="font-bold" x-text="stats.subscription.metric"></span>
+            <template x-if="stats.subscription.change > 0">
+              <span class="badge badge-success">
+                <i class="ti ti-arrow-up"></i>
+                <span x-text="stats.subscription.change"></span>%
+              </span>
+            </template>
+
+            <template x-if="stats.subscription.change < 0">
+              <span class="badge badge-failure">
+                <i class="ti ti-arrow-down"></i>
+                <span x-text="stats.subscription.change"></span>%
+              </span>
+            </template>
+
+            <template x-if="stats.subscription.change == 0">
+              <span class="badge">
+                <span x-text="stats.subscription.change"></span>%
+              </span>
+            </template>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+
+  <hr class="my-6">
+
+  <div class="flex gap-2 justify-between items-center">
+    <h2>{{ p__('heading', 'Credit usage') }}</h2>
+
+    <span class="badge">
+      {{ p__('button', 'Last 30 days') }}
+    </span>
+  </div>
+
+  <div class="h-64">
+    <x-chart :set="JSON.stringify(datasets.usage)" class="block">
+      <div chart class="h-64"></div>
+    </x-chart>
+  </div>
+</section>

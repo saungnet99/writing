@@ -1,0 +1,170 @@
+<div class="relative"
+  @click.outside="$refs.usermenu.removeAttribute('data-open')">
+
+  <div
+    class="left-0 top-auto right-auto bottom-full mb-1 w-60 text-base menu max-h-max peer"
+    x-ref="usermenu" @click="$el.removeAttribute('data-open')">
+
+    <a href="app/account"
+      class="flex gap-3 items-center p-4 w-full text-left hover:bg-intermediate hover:text-intermediate-content">
+      <x-avatar class="bg-accent text-accent-content"
+        title="{{ user.first_name ~ " " ~ user.last_name }}"
+        src="{{ user.avatar }}">
+      </x-avatar>
+
+      <div class="max-w-[156px]">
+        <div class="overflow-hidden font-bold text-ellipsis">
+          {{ user.first_name }}
+          {{ user.last_name }}
+        </div>
+
+        <div
+          class="overflow-hidden mt-1 text-sm text-content-dimmed text-ellipsis">
+          {{ user.email }}</div>
+      </div>
+    </a>
+
+    <hr class="border-t border-line-dimmed">
+    <ul>
+      {% if user.role == 'admin' %}
+      {% if view_namespace == 'admin' %}
+      <li>
+        <a href="app"
+          class="flex gap-2 items-center px-4 py-2 hover:bg-intermediate hover:text-intermediate-content">
+          <i class="ti ti-sparkles"></i>
+          {{ p__('button', 'Switch to app') }}
+        </a>
+      </li>
+      {% else %}
+      <li>
+        <a href="admin"
+          class="flex gap-2 items-center px-4 py-2 hover:bg-intermediate hover:text-intermediate-content">
+          <i class="ti ti-lock-cog"></i>
+          {{ p__('button', 'Switch to admin') }}
+        </a>
+      </li>
+      {% endif %}
+      {% endif %}
+
+      {% if option.color_scheme.modes is not defined or option.color_scheme.modes|length > 1 %}
+      <li>
+        <mode-switcher>
+          <button type="button"
+            class="flex gap-2 items-center px-4 py-2 w-full hover:bg-intermediate hover:text-intermediate-content"
+            @click.stop>
+            <i class="ti ti-moon group-data-[mode=dark]/html:hidden"></i>
+            <i class="ti ti-sun hidden group-data-[mode=dark]/html:block"></i>
+
+            <span class="group-data-[mode=dark]/html:hidden">
+              {{ p__('button', 'Dark mode') }}
+            </span>
+
+            <span class="hidden group-data-[mode=dark]/html:inline">
+              {{ p__('button', 'Light mode') }}
+            </span>
+          </button>
+        </mode-switcher>
+      </li>
+      {% endif %}
+    </ul>
+
+    <hr class="border-t border-line-dimmed">
+
+    <ul>
+      <li>
+        <a href="app/account"
+          class="flex gap-2 items-center px-4 py-2 hover:bg-intermediate hover:text-intermediate-content">
+          <i class="ti ti-user-circle"></i>
+
+          {{ p__('button', 'Account') }}
+        </a>
+      </li>
+
+      {% if option.affiliates is defined and option.affiliates.is_enabled and view_namespace == 'app' %}
+      <li>
+        <a href="app/affiliates"
+          class="flex gap-2 items-center px-4 py-2 hover:bg-intermediate hover:text-intermediate-content">
+          <i class="ti ti-coins"></i>
+
+          {{ p__('button', 'Affiliates') }}
+        </a>
+      </li>
+      {% endif %}
+
+
+      <li>
+        <a href="logout"
+          class="flex gap-2 items-center px-4 py-2 hover:bg-intermediate hover:text-intermediate-content">
+          <i class="ti ti-logout"></i>
+
+          {{ p__('button', 'Logout') }}
+        </a>
+      </li>
+    </ul>
+
+    <hr class="border-t border-line-dimmed">
+
+    <ul class="flex flex-col gap-2 px-4 py-2 text-xs text-content-dimmed">
+      {% if user.role == 'admin' %}
+      <li>
+        <a href="admin/api-docs"
+          class="flex gap-1 items-center hover:text-content group"
+          target="_blank">
+          <span class="group-hover:underline">
+            {{ p__('button', 'Admin API Docs') }}
+          </span>
+
+          <i class="text-xs ti ti-external-link"></i>
+        </a>
+      </li>
+      {% endif %}
+
+      {% if option.policies.tos is defined and option.policies.tos is not empty %}
+      <li>
+        <a href="policies/terms" class="hover:text-content hover:underline">
+          {{ p__('button', 'Terms of services') }}
+        </a>
+      </li>
+      {% endif %}
+
+      {% if option.policies.privacy is defined and option.policies.privacy is not empty %}
+      <li>
+        <a href="policies/privacy" class="hover:text-content hover:underline">
+          {{ p__('button', 'Privacy policy') }}
+        </a>
+      </li>
+      {% endif %}
+
+      {% if option.policies.refund is defined and option.policies.refund is not empty %}
+      <li>
+        <a href="policies/refund" class="hover:text-content hover:underline">
+          {{ p__('button', 'Refund policy') }}
+        </a>
+      </li>
+      {% endif %}
+    </ul>
+  </div>
+
+  <button
+    class="flex items-center w-full gap-2 py-2 rounded-lg text-intermediate-content-dimmed hover:text-content peer-data-[open]:text-intermediate-content text-left"
+    @click="$refs.usermenu.toggleAttribute('data-open')">
+    <x-avatar class="bg-accent text-accent-content"
+      title="{{ user.first_name ~ " " ~ user.last_name }}"
+      src="{{ user.avatar }}">
+    </x-avatar>
+
+    <div class="max-w-[128px] whitespace-nowrap">
+      <div
+        class="overflow-hidden font-bold text-intermediate-content text-ellipsis">
+        {{ user.first_name }} {{ user.last_name }}
+      </div>
+
+      <div
+        class="overflow-hidden text-xs text-intermediate-content-dimmed text-ellipsis">
+        {{ user.subscription ? user.subscription.plan.title : user.email }}
+      </div>
+    </div>
+
+    <i class="ml-auto ti ti-dots-vertical"></i>
+  </button>
+</div>
